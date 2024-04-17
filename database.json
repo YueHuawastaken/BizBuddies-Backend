@@ -1,0 +1,9 @@
+{
+    "dev": {
+      "driver": "mysql",
+      "user": "foo",
+      "password":"bar",
+      "database":"bizBuddies",
+      "host":"127.0.0.1"
+    }
+  }
