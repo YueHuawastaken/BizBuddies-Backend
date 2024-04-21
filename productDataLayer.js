@@ -56,8 +56,20 @@ async function addProductVersion(product_id, image_url, versionName, price) {
 async function deleteProduct(productId) {
     const connection = getConnection();
     // check if the customerId in a relationship with an employee
-    const query = `DELETE FROM Products WHERE product_id = ?`;
-    await connection.execute(query, [productId]);
+    const query1 = `DELETE FROM ProductVersion WHERE ProductVersion.product_id = ?`
+    const query2 = `DELETE FROM Products WHERE Products.product_id = ? `;
+    await connection.execute(query1, [productId]);
+    await connection.execute(query2, [productId]);
+    return {
+        'success': true,
+        'message': 'Product has been deleted'
+    }
+}
+async function deleteProductVersion(VersionId) {
+    const connection = getConnection();
+    // check if the customerId in a relationship with an employee
+    const query = `DELETE FROM ProductVersion WHERE productVersion_id = ?`;
+    await connection.execute(query, [VersionId]);
     return {
         'success': true,
         'message': 'Product has been deleted'
@@ -66,37 +78,27 @@ async function deleteProduct(productId) {
 
 async function updateProduct(productId, newProduct) {
     const connection = getConnection();
-    const query = `UPDATE Products SET productName=?,
-    description=?, 
-    image_url=?,
-    versionName=?
-    price=?`
+    const query1 = `UPDATE Products SET productName=?,
+    description=?;`
+    const query2 = `UPDATE ProductVersion SET versionName=?,
+    price=?,
+    image_url=?;`
+
   
     // update the customer first
-    const {first_name, last_name, rating, company_id} = newCustomer;
-    console.log(first_name, last_name, rating, company_id);
-    await connection.execute(query, [first_name, last_name, rating, company_id, customerId]);
-
+    const {productName, description, versionName, price, image_url} = newProduct;
+    console.log(productName, description, versionName, price, image_url);
+    await connection.execute(query1, [productName, description]);
+    await connection.execute(query2, [versionName, price, image_url]);
+ 
+    return {
+        'success': true,
+        'message': 'Product has been updated'
+    }
     // 1. update the relationship by first DELETE all M:N relationships
-    await connection.execute("DELETE FROM EmployeeCustomer WHERE customer_id = ?", [customerId]);
+   // same as `const employees = req.body.employees`
+ 
 
-    // 2. add back the relationship that is selected by the user
-    // ADD IN M:N relationship after the creating the row
-    // We have to do so because the primary key is only available after the insert
-    const { employees } = newCustomer; // same as `const employees = req.body.employees`
-
-    let employeeArray = [];
-    if (Array.isArray(employees)) {
-        employeeArray = employees;
-    } else {
-        employeeArray.push(employees);
-    }
-
-    for (let employee_id of employeeArray) {
-        await connection.execute(`INSERT INTO EmployeeCustomer (employee_id, customer_id) 
-            VALUES (?, ?)
-`, [employee_id, customerId])
-    }
 }
 
-module.exports = { getAllProducts, addProduct, addProductVersion }
+module.exports = { getAllProducts, addProduct, addProductVersion, deleteProduct, deleteProductVersion, updateProduct}

@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { connectToDB, getConnection } = require('./sql');
-const { getAllProducts, addProduct, deleteProduct, updateProduct} = require('./productDataLayer');
+const { getAllProducts, addProduct, deleteProduct, deleteProductVersion, updateProduct} = require('./productDataLayer');
 const productCrud = require('./productCrudLayer');
 require('dotenv').config();
 
@@ -38,7 +38,7 @@ async function main() {
         // const company_id = req.body.company_id;
 
         // Object Destructuring
-        const { productName, description, image_url,  versionName,  price} = req.body;
+        const {productName, description, image_url,  versionName,  price} = req.body;
         const results = await productCrud.addNewProduct( productName, description, image_url,  versionName,  price)
         
         if (results.success) {
@@ -65,7 +65,20 @@ async function main() {
         }
     })
 
-    app.put('/api/product/:productId', async function(req,res){
+    app.delete('/api/products/version/:versionId', async function(req,res){
+        const {versionId} = req.params;
+        
+        const results = await deleteProductVersion (versionId);
+        if (results.success) {
+            res.status(200);
+            res.json(results);
+        } else {
+            res.status(400);
+            res.json(results);
+        }
+    })
+
+    app.put('/api/products/:productId', async function(req,res){
         const {productId} = req.params;
        
         await updateProduct(productId, {...req.body});
@@ -74,6 +87,17 @@ async function main() {
         });
         
     })
+
+    // , {...req.body}
+    // app.put('/api/products/version/:versionId', async function(req,res){
+    //     const {versionId} = req.params;
+       
+    //     await updateProduct(versionId, {...req.body});
+    //     res.json({
+    //         'message':"The product has been updated successfully"
+    //     });
+        
+    // })
 
 }
 

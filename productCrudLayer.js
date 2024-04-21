@@ -18,4 +18,5 @@ async function addNewProduct(productName, description, image_url,  versionName, 
 
 }
 
+
 module.exports = { getAllProducts, addNewProduct};
