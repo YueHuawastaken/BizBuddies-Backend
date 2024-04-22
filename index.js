@@ -55,6 +55,7 @@ async function main() {
 
     app.delete('/api/products/:productId', async function(req,res){
         const {productId} = req.params;
+        console.log("product id here", productId);
         const results = await deleteProduct(productId);
         if (results.success) {
             res.status(200);
@@ -81,6 +82,7 @@ async function main() {
     app.put('/api/products/:productId', async function(req,res){
         const {productId} = req.params;
        
+        console.log("route hit, req.body here", req.body)
         await updateProduct(productId, {...req.body});
         res.json({
             'message':"The product has been updated successfully"

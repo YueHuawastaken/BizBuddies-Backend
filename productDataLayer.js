@@ -54,6 +54,7 @@ async function addProductVersion(product_id, image_url, versionName, price) {
 }
 
 async function deleteProduct(productId) {
+    console.log("DAL hit")
     const connection = getConnection();
     // check if the customerId in a relationship with an employee
     const query1 = `DELETE FROM ProductVersion WHERE ProductVersion.product_id = ?`
@@ -78,16 +79,20 @@ async function deleteProductVersion(VersionId) {
 
 async function updateProduct(productId, newProduct) {
     const connection = getConnection();
+    
+    console.log("DAL product here", productId, newProduct);
+    const {productName, description, versionName, price, image_url} = newProduct;
+
     const query1 = `UPDATE Products SET productName=?,
-    description=?;`
+    description=?
+    WHERE product_id = ${productId};`
     const query2 = `UPDATE ProductVersion SET versionName=?,
     price=?,
-    image_url=?;`
+    image_url=?
+    WHERE product_id = ${productId};`
 
   
     // update the customer first
-    const {productName, description, versionName, price, image_url} = newProduct;
-    console.log(productName, description, versionName, price, image_url);
     await connection.execute(query1, [productName, description]);
     await connection.execute(query2, [versionName, price, image_url]);
  
