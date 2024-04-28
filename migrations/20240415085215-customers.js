@@ -29,13 +29,21 @@ exports.up = function(db) {
     },
     'phoneNumber': {
       'type':'string',
-      'notNull': true
     },
     ' email':{
       'type': 'string',
       'notNull': true
+    },
+      'warehouseAddress': {
+        'type' : 'string',
+        'notNull': true
+      },
+     'password' : {
+      'type' : 'string',
+      'notNull' : true
+     }
     }
-  })
+  )
 };
 
 

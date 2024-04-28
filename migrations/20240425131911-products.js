@@ -15,35 +15,27 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  return db.createTable('shippingCompany', {
+  return db.createTable('products', {
     'id': {
       'type':'int',
       'primaryKey': true,
       'autoIncrement': true,
       'unsigned': true
     },
-     'zhiFuVerification': {
+     'productName': {
       'type':'string',
       'notNull': true
     },
-     'phoneNumber': {
+     'description': {
       'type':'string',
       'notNull': true
     },
-      'wxId':{
-      'type': 'string',
-      'notNull': true
-    },
-      'companyName': {
-      'type': 'string',
-      'notNull': true
-      },
   })
 };
 
 
 exports.down = function(db) {
-  return db.dropTable('shippingCompany');
+  return db.dropTable('products');
 };
 
 exports._meta = {

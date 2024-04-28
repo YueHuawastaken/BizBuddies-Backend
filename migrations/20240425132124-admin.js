@@ -15,39 +15,26 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  return db.createTable('suppliers', {
+  return db.createTable('admin', {
     'id': {
       'type':'int',
       'primaryKey': true,
       'autoIncrement': true,
       'unsigned': true
     },
-     'zhiFuVerification': {
-      'type':'string',
+    'username' : {
+      'type' : 'string',
       'notNull': true
     },
-     'phoneNumber': {
-      'type':'string',
-      'notNull': true
-    },
-      'wxId':{
-      'type': 'string',
-      'notNull': true
-    },
-      'studioShopName': {
-      'type': 'string',
-      'notNull': true
-      },
-      'password': {
-        'type': 'string',
-        'notNull': true
-        },
+    'password' : {
+    'type' : 'string',
+    'notNull' : true
+  }
   })
 };
 
-
 exports.down = function(db) {
-  return  db.dropTable('suppliers');
+  return db.dropTable('admin');
 };
 
 exports._meta = {

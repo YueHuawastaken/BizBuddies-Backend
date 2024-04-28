@@ -3,6 +3,7 @@ const cors = require('cors');
 const { connectToDB, getConnection } = require('./sql');
 const { getAllProducts, addProduct, deleteProduct, deleteProductVersion, updateProduct} = require('./productDataLayer');
 const productCrud = require('./productCrudLayer');
+const reloadPage = require('./reloadPage');
 require('dotenv').config();
 
 const app = express();
@@ -12,13 +13,14 @@ app.use(cors()); // enable cross origin resources sharing
 app.use(express.json()); // enable sending back responses as JSON
                          // and reciving data as JSON
 
+
 async function main() {
 
     await connectToDB(
         process.env.DB_HOST,
         process.env.DB_USER,
         process.env.DB_DATABASE,
-        process.env.DB_PASSWORD
+        process.env.DB_PASSWORD,
     );
 
     const connection = getConnection();
@@ -43,8 +45,10 @@ async function main() {
         
         if (results.success) {
             res.json({
-                'new_product_id': results.insertId
-            })
+                'new_product_id': results.insertId 
+            },
+            reloadPage()
+        )
         } else {
             res.json(400);
             res.json(results);

@@ -17,7 +17,7 @@ async function getAllProducts() {
 
 async function addProduct(productName, description) {
 
-    const connection = getConnection();
+    const connection = await getConnection();
 
     // create the query
     const query = `INSERT INTO Products (productName, description)
@@ -36,7 +36,7 @@ async function addProduct(productName, description) {
 
 async function addProductVersion(product_id, image_url, versionName, price) {
 
-    const connection = getConnection();
+    const connection = await getConnection();
 
     // create the query
     const query = `INSERT INTO ProductVersion (product_id, image_url, versionName, price)
@@ -55,7 +55,7 @@ async function addProductVersion(product_id, image_url, versionName, price) {
 
 async function deleteProduct(productId) {
     console.log("DAL hit")
-    const connection = getConnection();
+    const connection = await getConnection();
     // check if the customerId in a relationship with an employee
     const query1 = `DELETE FROM ProductVersion WHERE ProductVersion.product_id = ?`
     const query2 = `DELETE FROM Products WHERE Products.product_id = ? `;
@@ -67,7 +67,7 @@ async function deleteProduct(productId) {
     }
 }
 async function deleteProductVersion(VersionId) {
-    const connection = getConnection();
+    const connection = await getConnection();
     // check if the customerId in a relationship with an employee
     const query = `DELETE FROM ProductVersion WHERE productVersion_id = ?`;
     await connection.execute(query, [VersionId]);
@@ -78,7 +78,7 @@ async function deleteProductVersion(VersionId) {
 }
 
 async function updateProduct(productId, newProduct) {
-    const connection = getConnection();
+    const connection = await getConnection();
     
     console.log("DAL product here", productId, newProduct);
     const {productName, description, versionName, price, image_url} = newProduct;
