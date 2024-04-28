@@ -3,11 +3,21 @@ const cors = require('cors');
 const { connectToDB, getConnection } = require('./sql');
 const { getAllProducts, addProduct, deleteProduct, deleteProductVersion, updateProduct} = require('./productDataLayer');
 const productCrud = require('./productCrudLayer');
-const reloadPage = require('./reloadPage');
+const hbs = require("hbs");
+const wax = require("wax-on");
 require('dotenv').config();
 
 const app = express();
 
+app.set("view engine", "hbs");
+app.use(express.static("public"));
+wax.on(hbs.handlebars);
+wax.setLayoutPath("./views/layouts");
+app.use(
+    express.urlencoded({
+      extended: false
+    })
+  );
 // RESTFUL API
 app.use(cors()); // enable cross origin resources sharing
 app.use(express.json()); // enable sending back responses as JSON
