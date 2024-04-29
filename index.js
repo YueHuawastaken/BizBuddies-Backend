@@ -23,6 +23,9 @@ app.use(cors()); // enable cross origin resources sharing
 app.use(express.json()); // enable sending back responses as JSON
                          // and reciving data as JSON
 
+const landingRoutes = require('./routes/landing')
+const productRoutes = require('./routes/products')
+
 
 async function main() {
 
@@ -34,6 +37,7 @@ async function main() {
     );
 
     const connection = getConnection();
+    app.use('/products', productRoutes);	
 
     app.get('/api/products', async function(req,res){
         const products = await productCrud.getAllProducts();
