@@ -38,7 +38,7 @@ const retrieveAllProductVersion = async () => {
 const retrieveAllSuppliers = async () => {
     try{
         const allSuppliers = await suppliers.fetchAll()
-                                    .map(suppliers=> [suppliers.get('studioShopName')])
+                                    .map(suppliers=> [suppliers.get('id'),suppliers.get('studioShopName')])
         return allSuppliers;
 
     } catch (error){

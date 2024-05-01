@@ -48,7 +48,11 @@ exports.up = function(db) {
         }
       }
     },
-    'Total Payable':{
+    'orderType': {
+      'type':'string',
+      'notNull': true
+    },
+    'totalPayable':{
       'type': 'decimal',
       'precision': 10,   
       'scale': 2,        
