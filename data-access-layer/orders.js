@@ -124,4 +124,5 @@ module.exports =    {
                         retrieveOrderByProductVersionIdAndSupplierId,
                         removeOrder,
                         createNewOrder,
+                        retrieveOrderByOrderIdAndProductVersionId
                     }
