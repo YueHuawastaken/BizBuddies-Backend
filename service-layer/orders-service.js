@@ -1,48 +1,38 @@
 const orderDataAccess = require('../data-access-layer/orders');
 
-const assignOrderNumber = async()=>{
-    const orderId = await orderDataAccess.assignOrderNumber();
-    return orderId;
-}
+
 
 const retrieveAllOrders = async () => {
     await orderDataAccess.retrieveAllOrders();
 }
 
-const retrieveOrderByUserId = async (userId) => {
-    await orderDataAccess.retrieveOrderByUserId(userId);
+const retrieveOrderByCustomerId = async (customer_id) => {
+    await orderDataAccess.retrieveOrderByCustomerId(customer_id);
 }
 
-const deleteOrder = async (userId) => {
-    await orderDataAccess.deleteOrder(userId);
+const  retrieveOrderByOrderId = async (order_id) => {
+    await orderDataAccess.retrieveOrderByOrderId(order_id);
 }
 
-const addToOrder = async (userId, productId, quantity) => {
-
-    const orderItem = await orderDataAccess.retrieveOrderItemByUserAndProduct(userId, productId);
-
-    if (orderItem){
-        const updatedQuantity = orderItem.get('quantity')+1;
-        await orderDataAccess.updateOrderItemQuantity(cartItem, userId, productId, updatedQuantity)
-    } else {
-        return await orderDataAccess.create(userId, productId, quantity)
-    }
+const deleteOrder = async (order_id) => {
+    await orderDataAccess.deleteOrder(order_id);
 }
 
-const updateOrderItemQuantity = async (userId, productId, updatedQuantity) => {
-    await orderDataAccess.updateOrderItemQuantity(cartItem=null, userId, productId, updatedQuantity);
-}
-
-const removeOrderItem = async (userId, productId) => {
-    await orderDataAccess.removeOrderItem(userId, productId);
+const removeOrder = async (order_id, productVersion_id) => {
+    await orderDataAccess.removeOrder(order_id, productVersion_id);
 }
 
 const createNewOrder = async (payload) => {
     await orderDataAccess.createNewOrder(payload);
 }
 
-const retrieveOrdersByUserIdAndPaidStatus = async (userId) => {
-    let retrievedOrders = await orderDataAccess.retrieveOrdersByUserIdAndPaidStatus(userId)
+const retrieveOrderByProductVersionIdAndSupplierId = async (supplier_id, productVersion_id) => {
+    let retrievedOrders = await orderDataAccess.retrieveOrderByProductVersionIdAndSupplierId(supplier_id, productVersion_id)
+    return retrievedOrders;
+}
+
+const retrieveOrderByOrderIdAndProductVersionId  = async (order_id, productVersion_id) => {
+    let retrievedOrders = await orderDataAccess.retrieveOrderByOrderIdAndProductVersionId(order_id, productVersion_id)
     return retrievedOrders;
 }
 

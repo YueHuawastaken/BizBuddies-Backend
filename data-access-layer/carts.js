@@ -75,7 +75,7 @@ const createNewCartItem = async (payload) => {
     }
 }
 
-const removeEntryFromCart = async (customer_id, cart_id, product_id) => {
+const removeEntryFromCart = async (customer_id, cart_id, productVersion_id) => {
     try{
         const cartItemForDeletion = await fetchCartItemByCustomerAndProductVersion(customer_id, cart_id, productVersion_id);
         console.log(cartItemForDeletion)
