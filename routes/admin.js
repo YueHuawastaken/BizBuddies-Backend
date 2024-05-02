@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 // ORM relations
-const { admin, Product, User, BlackListedToken, Session, Cart_Item, Order_Item } = require('../models');
+const { admin, Product, User, BlackListedToken, Session, Cart_Item, Order_Item, products } = require('../models');
 
 // Forms
 const { bootstrapField, 
@@ -131,7 +131,7 @@ router.post('/login', async(req, res)=>{
 
                 req.session.admin = {
                     id: foundAdmin.get('id'),
-                    name: foundAdmin.get('username'),
+                    username: foundAdmin.get('username'),
                     ipAddress: req.ip,
                     date: new Date(),
                     accessToken: accessToken,
@@ -151,7 +151,7 @@ router.post('/login', async(req, res)=>{
 
                     const session = new Session();
                     session.set('session', req.session.admin);
-                    session.set('super_admin_id', adminId)
+                    session.set('admin_id', adminId)
                     await session.save()
 
                     console.log('session saved to db')
@@ -258,17 +258,12 @@ router.get('/products/:productId/update', [checkSessionAuthentication, checkAuth
 
     const form = createProductForm(allProducts, allProductVersion);
 
-    form.fields.productName.value = await product.get('name');
-    form.fields.price.value = await product.get('price');
-    form.fields.description.value = await product.get('description');
-    form.fields.post_category_id.value = await product.get('post_category_id');
-    form.fields.image_url.value = await product.get('image_url');
-    form.fields.thumbnail_url.value = await product.get('thumbnail_url');
-    form.fields.chapter_content.value = await product.get('chapter_content');
-    form.fields.stock.value = await product.get('stock');
-
-    const selectedGenres = await product.related('genres').pluck('id');
-    form.fields.genres.value = selectedGenres;
+    form.fields.productName.value = await products.get('productName');
+    form.fields.description.value = await products.get('description');
+    form.fields.versionName.value = await products.get('versionName');
+    form.fields.image_url.value = await products.get('image_url');
+    form.fields.price.value = await products.get('price');
+    form.fields.studioShopName.value = await products.get('studioShopName');
 
     res.render('admin/update', {
         'form': form.toHTML(bootstrapField),
@@ -286,21 +281,16 @@ router.post('/products/:productId/update', [checkSessionAuthentication, checkAut
     const productId = req.params.productId;
     const product = await findProductById(productId);
 
-    const allPostCategories = await retrieveAllPostCategories();
-    const allGenres = await retrieveAllGenres();
+    const allProducts = await retrieveAllProducts();
+    const allProductVersion = await retrieveAllProductVersion();
 
-    const form = createProductForm(allPostCategories, allGenres);
+    const form = createProductForm(allProducts, allProductVersion);
 
     form.handle(req, {
         "success" : async (form) =>{
-            let {genres, ... productData} = form.data;
+            let {... productData} = form.data;
             product.set(productData);
             await product.save();
-
-            const indicatedGenres = await product.related('genres').pluck('id');
-
-            await product.genres().detach(indicatedGenres);
-            await product.genres().attach(form.data.genres.split(','));
 
             req.flash("success", "product updated");
             res.redirect('/admin/products')
@@ -327,10 +317,10 @@ router.post('/products/:productId/update', [checkSessionAuthentication, checkAut
 })
 
 router.get('/add-product', [checkSessionAuthentication, checkAuthenticationWithJWT], async (req,res)=>{
-    const allPostCategories = await retrieveAllPostCategories();
-    const allGenres = await retrieveAllGenres();
+    const allProducts = await retrieveAllProducts();
+    const allProductVersion = await retrieveAllProductVersion();
 
-    const form = createProductForm(allPostCategories, allGenres);
+    const form = createProductForm(allProducts, allProductVersion);
     res.render('admin/create', {
         'form': form.toHTML(bootstrapField),
         cloudinaryName: process.env.CLOUDINARY_NAME,
@@ -340,21 +330,17 @@ router.get('/add-product', [checkSessionAuthentication, checkAuthenticationWithJ
 })
 
 router.post('/add-product', [checkSessionAuthentication, checkAuthenticationWithJWT], async (req, res)=>{
-    const allPostCategories = await retrieveAllPostCategories();
-    const allGenres = await retrieveAllGenres();
+    const allProducts = await retrieveAllProducts();
+    const allProductVersion = await retrieveAllProductVersion();
 
-    const form = createProductForm(allPostCategories, allGenres);
-    console.log('super admin product form here', form);
+    const form = createProductForm(allProducts, allProductVersion);
+    console.log('admin product form here', form);
 
     form.handle(req, {
         "success": async (form) =>{
             let product = await addProductListing(form);
 
             console.log(product)
-            if (form.data.genres){
-                console.log('form genres here', form.data.genres)
-                await product.genres().attach(form.data.genres.split(','));
-            }
             req.flash("success", "New product created");
             res.redirect('/admin/products')
         },
@@ -403,97 +389,97 @@ router.get('/logout', [checkSessionAuthentication, checkAuthenticationWithJWT], 
     res.redirect('/admin/login')
 })
 
-router.get('/users', [checkSessionAuthentication, checkAuthenticationWithJWT], async(req,res)=>{
+router.get('/suppliers', [checkSessionAuthentication, checkAuthenticationWithJWT], async(req,res)=>{
 
-    const userSearchForm = createUserSearchForm();
+    const supplierSearchForm = createSupplierSearchForm();
 
-    const query= User.collection();
+    const query= suppliers.collection();
 
-    userSearchForm.handle(req, {
-        'success': async (userSearchForm) => {
-            console.log('user search route hit')
+    supplierSearchForm.handle(req, {
+        'success': async (supplierSearchForm) => {
+            console.log('supplier search route hit')
 
-            if (userSearchForm.data.id) {
-                console.log('search form id hit', userSearchForm.data.id)
-                query.where('id', '=', userSearchForm.data.id)
+            if (supplierSearchForm.data.id) {
+                console.log('search form id hit', supplierSearchForm.data.id)
+                query.where('id', '=', supplierSearchForm.data.id)
             }
 
-            if (userSearchForm.data.name) {
-                console.log('search form name hit', userSearchForm.data.name)
-                query.where('name', 'like', '%' + userSearchForm.data.name + '%')
+            if (supplierSearchForm.data.studioShopName) {
+                console.log('search form studioShopName hit', supplierSearchForm.data.studioShopName)
+                query.where('studioShopName', 'like', '%' + supplierSearchForm.data.studioShopName + '%')
             }
 
-            if (userSearchForm.data.email) {
-                console.log('search form email hit', userSearchForm.data.email)
-                query.where('email', '=', userSearchForm.data.email)
+            if (supplierSearchForm.data.phoneNumber) {
+                console.log('search form phone number hit', supplierSearchForm.data.phoneNumber)
+                query.where('phoneNumber', '=', supplierSearchForm.data.phoneNumber)
             }
 
-            const users = await query.fetch()
+            const suppliers = await query.fetch()
 
-            res.render('admin/users', {
-                'users': users.toJSON(),
-                'searchForm': userSearchForm.toHTML(bootstrapField)
+            res.render('admin/suppliers', {
+                'suppliers': suppliers.toJSON(),
+                'searchForm': supplierSearchForm.toHTML(bootstrapField)
             })
         },
-        'empty': async (userSearchForm) => {
+        'empty': async (supplierSearchForm) => {
 
-            const users = await query.fetch()
-            console.log(users)
+            const suppliers = await query.fetch()
+            console.log(suppliers)
 
-            res.render('admin/users',{
-                'users': users.toJSON(),
-                'searchForm': userSearchForm.toHTML(bootstrapField)
+            res.render('admin/suppliers',{
+                'suppliers': suppliers.toJSON(),
+                'searchForm': supplierSearchForm.toHTML(bootstrapField)
             })
         }
     })
 })
 
-router.get('/users/:userId/delete', [checkSessionAuthentication, checkAuthenticationWithJWT], async (req,res)=>{
-    let userId = req.params.userId;
+router.get('/suppliers/:supplierId/delete', [checkSessionAuthentication, checkAuthenticationWithJWT], async (req,res)=>{
+    let supplierId = req.params.supplierId;
     
-    const user = await findUserById(userId);
+    const suppliers = await findSupplierById(supplierId);
 
-    res.render('admin/user-delete', {
-        'user': user.toJSON()
+    res.render('admin/supplier-delete', {
+        'suppliers': suppliers.toJSON()
     })
 })
 
-router.post('/users/:userId/delete', [checkSessionAuthentication, checkAuthenticationWithJWT], async (req,res)=>{
+router.post('/suppliers/:supplierId/delete', [checkSessionAuthentication, checkAuthenticationWithJWT], async (req,res)=>{
 
     console.log('user delete route hit');
 
-    let userId = req.params.userId;
-    console.log('req.params.userId here', userId)
-    const user =await findUserById(userId);
+    let supplierId = req.params.supplierId;
+    console.log('req.params.supplierId here', supplierId)
+    const supplier =await findSupplierById(supplierId);
 
-    await user.destroy();
-    req.flash('success', `User Deleted`)
-    res.redirect('/admin/users');
+    await supplier.destroy();
+    req.flash('success', `Supplier Deleted`)
+    res.redirect('/admin/suppliers');
 })
 
-router.get('/users/:userId/products', [checkSessionAuthentication, checkAuthenticationWithJWT], async(req,res)=>{
+router.get('/suppliers/:supplierId/products', [checkSessionAuthentication, checkAuthenticationWithJWT], async(req,res)=>{
     
     console.log('user products route hit');
 
-    let allPostCategories = await retrieveAllPostCategories();
-    allPostCategories.unshift([0, '-------']);
+    let allProducts= await retrieveAllProducts();
+    allProducts.unshift([0, '-------']);
 
-    let allGenres = await retrieveAllGenres();
-    allGenres.unshift([0, '-------']);
+    let allProductVersion = await retrieveAllProductVersion();
+    allProductVersion.unshift([0, '-------']);
 
-    const searchForm = createUserProductsSearchForm(allPostCategories, allGenres);
+    const searchForm = createUserProductsSearchForm(allProducts, allProductVersion);
 
-    const query= Product.collection();
+    const query= products.collection();
 
     searchForm.handle(req, {
         'success': async (searchForm) => {
             console.log('search route hit')
 
-            query.where('products.user_id', '=', req.params.userId);
+            query.where('products.supplier_id', '=', req.params.supplierId);
             
-            if (searchForm.data.name) {
-                console.log('search form name hit', searchForm.data.name)
-                query.where('name', 'like', '%' + searchForm.data.name + '%')
+            if (searchForm.data.productName) {
+                console.log('search form product name hit', searchForm.data.productName)
+                query.where('productName', 'like', '%' + searchForm.data.productName + '%')
             }
 
             if (searchForm.data.min_price) {
@@ -506,58 +492,51 @@ router.get('/users/:userId/products', [checkSessionAuthentication, checkAuthenti
                 query.where('price', '<=', searchForm.data.max_price)
             }
 
-            if (searchForm.data.post_category_id && searchForm.data.post_category_id != 0) {
-                console.log('search form post category id hit =>', searchForm.data.post_category_id);
-
-                query.where('post_category_id', '=', searchForm.data.post_category_id);
-            }
-
-            if (searchForm.data.genres && searchForm.data.genres != 0) {
-                console.log('search form genres hit', searchForm.data.genres)
-
-                query.query(qb => {
-                    qb.join('genres_products', 'product_id', 'products.id');
-                    qb.where('genre_id', 'in', searchForm.data.genres.split(','));
-                });                
-            }
-
             const products = await query.fetch({
-                withRelated:[   'post_category', 
-                                'genres', {
-                                'user': (queryBuild) => {
-                                                            queryBuild.select('id', 'name')
-                                                        }
-                                }
+                withRelated:[    {
+                        'productVersion': (queryBuild) => {
+                        queryBuild.select('id', 'versionName', 'image_url', 'price', )
+                        }
+                    },
+                    {
+                        'suppliers' : (queryBuild) => {
+                            queryBuild.select('studioShopName')
+                        }
+                    }
                             ]
             })
 
-            const user = await findUserById(req.params.userId);
+            const supplier = await findSupplierById(req.params.supplierId);
 
-            res.render('admin/user-products', {
+            res.render('admin/supplier-products', {
                 'products': products.toJSON(),
-                'user': user.toJSON(),
+                'suppliers': supplier.toJSON(),
                 'searchForm': searchForm.toHTML(bootstrapField)
             })
         },
         'empty': async (searchForm) => {
 
-            query.where('products.user_id', '=', req.params.userId);
+            query.where('productVersion.supplier_id', '=', req.params.supplierId);
 
-            const user = await findUserById(req.params.userId);
+            const supplier = await findSupplierById(req.params.supplierId);
 
             const products = await query.fetch({
-                withRelated:[   'post_category', 
-                                'genres', {
-                                'user': (queryBuild) => {
-                                                            queryBuild.select('id', 'name')
-                                                        }
-                                }
+                withRelated:[    {
+                    'productVersion': (queryBuild) => {
+                    queryBuild.select('id', 'versionName', 'image_url', 'price', )
+                    }
+                },
+                {
+                    'suppliers' : (queryBuild) => {
+                        queryBuild.select('studioShopName')
+                    }
+                }
                             ]
             })
 
-            res.render('admin/user-products',{
+            res.render('admin/supplier-products',{
                 'products': products.toJSON(),
-                'user': user.toJSON(),
+                'suppliers': supplier.toJSON(),
                 'searchForm': searchForm.toHTML(bootstrapField)
             })
         }
@@ -568,7 +547,7 @@ router.get('/carts', [checkSessionAuthentication, checkAuthenticationWithJWT], a
     
     const cartSearchForm = createCartSearchForm();
 
-    const query= Cart_Item.collection();
+    const query= carts.collection();
 
     cartSearchForm.handle(req, {
         'success': async (cartSearchForm) => {
@@ -579,9 +558,9 @@ router.get('/carts', [checkSessionAuthentication, checkAuthenticationWithJWT], a
                 query.where('cart_id', '=', cartSearchForm.data.cart_id)
             }
 
-            if (cartSearchForm.data.user_id) {
-                console.log('search form id hit', cartSearchForm.data.user_id)
-                query.where('user_id', '=', cartSearchForm.data.user_id)
+            if (cartSearchForm.data.customer_id) {
+                console.log('search form id hit', cartSearchForm.data.customer_id)
+                query.where('customer_id', '=', cartSearchForm.data.customer_id)
             }
 
             const carts = await query.orderBy('cart_id', 'desc').fetch()
@@ -607,11 +586,11 @@ router.get('/carts/:cartId/delete-cart', [checkSessionAuthentication, checkAuthe
     
     let cartId = parseInt(req.params.cartId);
     
-    const cartItems = await retrieveSingleCartItems(cartId);
-    console.log(cartItems.toJSON())
+    const carts = await retrieveSingleCartItem(cartId);
+    console.log(carts.toJSON())
 
     res.render('admin/cart-delete', {
-        'cartItems': cartItems.toJSON()
+        'carts': carts.toJSON()
     })
 })
 
@@ -621,7 +600,7 @@ router.post('/carts/:cartId/delete-cart', [checkSessionAuthentication, checkAuth
 
     let cartId = req.params.cartId;
 
-    await Cart_Item.query().where({ 'cart_id': cartId }).del();
+    await carts.query().where({ 'cart_id': cartId }).del();
 
     req.flash('success', `Cart Deleted`)
     res.redirect('/admin/carts');
@@ -631,7 +610,7 @@ router.get('/orders', [checkSessionAuthentication, checkAuthenticationWithJWT], 
     
     const orderSearchForm = createOrderSearchForm();
 
-    const query= Order_Item.collection();
+    const query= orders.collection();
 
     orderSearchForm.handle(req, {
         'success': async (orderSearchForm) => {
@@ -642,9 +621,9 @@ router.get('/orders', [checkSessionAuthentication, checkAuthenticationWithJWT], 
                 query.where('order_id', '=', orderSearchForm.data.order_id)
             }
 
-            if (orderSearchForm.data.user_id) {
-                console.log('search form id hit', orderSearchForm.data.user_id)
-                query.where('user_id', '=', orderSearchForm.data.user_id)
+            if (orderSearchForm.data.supplier_id) {
+                console.log('search form id hit', orderSearchForm.data.supplier_id)
+                query.where('supplier_id', '=', orderSearchForm.data.supplier_id)
             }
 
             if (orderSearchForm.data.product_id) {
@@ -652,14 +631,9 @@ router.get('/orders', [checkSessionAuthentication, checkAuthenticationWithJWT], 
                 query.where('product_id', '=', orderSearchForm.data.product_id)
             }
 
-            if (orderSearchForm.data.seller_id) {
-                console.log('search form id hit', orderSearchForm.data.seller_id)
-                query.where('seller_id', '=', orderSearchForm.data.seller_id)
-            }
-
-            if (orderSearchForm.data.fulfilment) {
-                console.log('search form id hit', orderSearchForm.data.fulfilment)
-                query.where('fulfilled', 'like', '%' + orderSearchForm.data.fulfilment + '%')
+            if (orderSearchForm.data.customer_id) {
+                console.log('search form id hit', orderSearchForm.data.customer_id)
+                query.where('customer_id', '=', orderSearchForm.data.customer_id)
             }
 
             const orders = await query.orderBy('order_id', 'desc').fetch()
@@ -691,54 +665,12 @@ router.get('/orders/:orderId/update-order', [checkSessionAuthentication, checkAu
     })
 })
 
-router.get('/orders/update-quantity', [checkSessionAuthentication, checkAuthenticationWithJWT], async(req,res)=>{
-
-    const orderId = req.query.orderId;
-    const productId = req.query.productId;
-    const newQuantity = req.query.newQuantity;
-    console.log('orderId:', orderId, 'productId:', productId, 'newQuantity', newQuantity);
-
-    let order = await updateOrderItemQuantity(orderId, productId, newQuantity);
-    console.log("this is updated order", order.toJSON())
-
-    res.render('admin/order-update-one',{
-        'order': order.toJSON()[0]
-    })
-})
-
-router.post('/orders/update-quantity', [checkSessionAuthentication, checkAuthenticationWithJWT], async(req,res)=>{
-
-    const orderId = req.query.orderId;
-    const productId = req.query.productId;
-    const newQuantity = req.body.newQuantity;
-
-    await updateOrderItemQuantity(orderId, productId, newQuantity);
-    req.flash('success', 'Item quantity updated');
-    res.redirect(`/orders/${orderId}/update-order`);
-})
-
-router.get('/orders/update-status/', [checkSessionAuthentication, checkAuthenticationWithJWT], async(req,res)=>{
-
-    const orderId = req.query.orderId;
-    const productId = req.query.productId;
-    let updatedStatus = req.query.updatedStatus;
-    console.log('orderId:', orderId, 'productId:', productId, 'updatedStatus', updatedStatus);
-
-    let order = await updateOrderFulfilment(orderId, productId, updatedStatus);
-    console.log("this is updated status", order.toJSON())
-
-    res.render('admin/order-update-status',{
-        'order': order.toJSON()[0]
-    })
-})
-
-
 router.get('/orders/delete-item/', [checkSessionAuthentication, checkAuthenticationWithJWT], async(req,res)=>{
 
     const orderId = req.query.orderId;
-    const productId = req.query.productId;
+    const productVersionId = req.query.productVersionId;
 
-    let order = await retrieveOrderItemByOrderIdAndProduct(orderId, productId);
+    let order = await retrieveOrderByOrderIdAndProductVersionId(orderId, productVersionId);
     console.log("this is order item to delete", order.toJSON())
 
     res.render('admin/order-delete',{
@@ -749,11 +681,11 @@ router.get('/orders/delete-item/', [checkSessionAuthentication, checkAuthenticat
 router.post('/orders/delete-item/', [checkSessionAuthentication, checkAuthenticationWithJWT], async(req,res)=>{
 
     const orderId = req.query.orderId;
-    const productId = req.query.productId;
+    const productVersionId = req.query.productVersionId;
  
     console.log('order delete route hit');
 
-    const orderItem =await removeOrderItem(orderId, productId);
+    const orderItem =await removeOrder(orderId, productVersionId);
 
     req.flash('success', `Order Item Deleted`)
     res.redirect(`/admin/orders/${orderId}/update-order`);
