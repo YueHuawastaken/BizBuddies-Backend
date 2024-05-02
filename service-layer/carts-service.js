@@ -9,6 +9,7 @@ const retrieveCustomerCartItems = async (cart_id) => {
     return cartItems;
 }
 
+
 const deleteCart = async (cart_id) => {
     await cartDataAccess.deleteCart(cart_id);
 }

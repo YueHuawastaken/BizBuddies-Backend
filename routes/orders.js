@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const orderService = require('../service-layer/order-service');
+const orderService = require('../service-layer/orders-service');
 const { checkUserAuthenticationWithJWT } = require('../middleware');
 
 router.get('/', [checkUserAuthenticationWithJWT], async(req,res)=>{
 
-    let userId = parseInt(req.query.userId)
+    let customerId = parseInt(req.query.customerId)
 
-    if (req.user.id === userId){
+    if (req.customers.id === customerId){
 
         try{
-            let allUserOrders = await orderService.retrieveOrdersByUserIdAndPaidStatus(req.user.id)
-            res.status(200).json({'userOrders': allUserOrders.toJSON()})
+            let allCustomerOrders = await orderService.retrieveOrderByCustomerId(req.customers.id)
+            res.status(200).json({'customerOrders': allCustomerOrders.toJSON()})
         } catch (error) {
             res.status(204).send('No orders fetched')
         }
@@ -22,10 +22,9 @@ router.get('/', [checkUserAuthenticationWithJWT], async(req,res)=>{
 
 router.post('/checkout', [checkUserAuthenticationWithJWT], async(req,res)=>{
 
-    if (req.user.id === parseInt(req.query.userId)){
+    if (req.customers.id === parseInt(req.query.customerId)){
 
         try{
-            let orderId = await orderService.assignOrderNumber();
             let payload = req.body;
 
             payload = payload.map((item) => ({...item, "order_id": parseInt(orderId)}))
@@ -39,7 +38,7 @@ router.post('/checkout', [checkUserAuthenticationWithJWT], async(req,res)=>{
             res.status(400).send('Fail to update orders')
         }
     } else {
-        res.status(401).send('User not authorized')
+        res.status(401).send('Customer not authorized')
     }
 })
 
