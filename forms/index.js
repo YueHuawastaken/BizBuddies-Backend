@@ -239,10 +239,10 @@ const createSupplierSearchForm = () => {
     })
 };
 
-const createUserProductsSearchForm = () => {
+const createSupplierProductsSearchForm = () => {
     return forms.create({
-        'name': fields.string({
-            label: "Name of work",
+        'productName': fields.string({
+            label: "Name of Product",
             required: false,
             errorAfterField: true,
             cssClasses: {
@@ -268,26 +268,18 @@ const createUserProductsSearchForm = () => {
             },
             validators:[validators.min(0), validators.integer()] 
         }),
-        'post_category_id': fields.string({
-            label:'Post Category',
+        'studioShopName': fields.string({
+            label: "Studio/Shop Name",
             required: false,
             errorAfterField: true,
-            widget: widgets.select(),
-            choices: post_category,
             cssClasses: {
                 label: ['form-label']
-            }
+            },
+            validators:[
+                validators.regexp(/^[a-zA-Z0-9._%+ -!'"?@()]+$/)
+            ]
         }),
-        'genres': fields.string({
-            label: 'Genres',
-            required: false,
-            errorAfterField: true,
-            widget: widgets.select(),
-            choices: genres,
-            cssClasses: {
-                label: ['form-label']
-            }
-        })
+        
     })
 };
 
@@ -305,8 +297,8 @@ const createCartSearchForm = () => {
                 validators.regexp(/^[a-zA-Z0-9._%+ -!'"?@()]+$/)
             ]
         }),
-        'user_id': fields.string({
-            label: "User Id",
+        'customer_id': fields.string({
+            label: "Customer Id",
             required: false,
             errorAfterField: true,
             cssClasses: {
@@ -332,8 +324,8 @@ const createOrderSearchForm = () => {
                 validators.regexp(/^[a-zA-Z0-9._%+ -!'"?@()]+$/)
             ]
         }),
-        'user_id': fields.string({
-            label: "User Id",
+        'customer_id': fields.string({
+            label: "Customer Id",
             required: false,
             errorAfterField: true,
             cssClasses: {
@@ -343,8 +335,8 @@ const createOrderSearchForm = () => {
                 validators.regexp(/^[a-zA-Z0-9._%+ -!'"?@()]+$/)
             ]
         }),
-        'product_id': fields.string({
-            label: "Product Id",
+        'productVersion_id': fields.string({
+            label: "Product Version Id",
             required: false,
             errorAfterField: true,
             cssClasses: {
@@ -354,19 +346,8 @@ const createOrderSearchForm = () => {
                 validators.regexp(/^[a-zA-Z0-9._%+ -!'"?@()]+$/)
             ]
         }),
-        'seller_id': fields.string({
-            label: "Seller Id",
-            required: false,
-            errorAfterField: true,
-            cssClasses: {
-                label: ['form-label']
-            },
-            validators:[
-                validators.regexp(/^[a-zA-Z0-9._%+ -!'"?@()]+$/)
-            ]
-        }),
-        'fulfilment': fields.string({
-            label: "Fulfilmment",
+        'supplier_id': fields.string({
+            label: "Supplier Id",
             required: false,
             errorAfterField: true,
             cssClasses: {
@@ -379,7 +360,7 @@ const createOrderSearchForm = () => {
     })
 };
 
-module.exports = { bootstrapField, createProductForm, createLoginForm, createRegisterForm, createSearchForm, createUserSearchForm, createUserProductsSearchForm, createCartSearchForm, createOrderSearchForm };
+module.exports = { bootstrapField, createProductForm, createLoginForm, createRegisterForm, createSearchForm, createSupplierSearchForm, createSupplierProductsSearchForm, createCartSearchForm, createOrderSearchForm };
 
 
 
