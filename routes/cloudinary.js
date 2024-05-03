@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { checkUserAuthenticationWithJWT } = require('../middleware');
+const { checkSupplierAuthenticationWithJWT } = require('../middleware');
 
 const cloudinary = require('cloudinary');
 cloudinary.config({

@@ -59,7 +59,7 @@ router.post('/process-payment', bodyParser.raw({type: 'application/json'}), asyn
         try{
             orderId = parseInt(orderId);
 
-            let paidProducts = await Order_Item.where({order_id: orderId}).fetchAll();
+            let paidProducts = await orders.where({order_id: orderId}).fetchAll();
             console.log('paid items to update =', paidProducts.toJSON());
 
             await knex('order_items').where({'order_id': orderId}).update({'paid': 'Yes'})

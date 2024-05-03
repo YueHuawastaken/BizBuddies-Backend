@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const orderService = require('../service-layer/orders-service');
-const { checkUserAuthenticationWithJWT } = require('../middleware');
+const { checkSupplierAuthenticationWithJWT } = require('../middleware');
 
-router.get('/', [checkUserAuthenticationWithJWT], async(req,res)=>{
+router.get('/', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 
     let customerId = parseInt(req.query.customerId)
 
@@ -20,7 +20,7 @@ router.get('/', [checkUserAuthenticationWithJWT], async(req,res)=>{
     }
 })
 
-router.post('/checkout', [checkUserAuthenticationWithJWT], async(req,res)=>{
+router.post('/checkout', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 
     if (req.customers.id === parseInt(req.query.customerId)){
 

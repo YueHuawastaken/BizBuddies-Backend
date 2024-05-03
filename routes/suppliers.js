@@ -12,7 +12,7 @@ const {retrieveOrderByCustomerId} = require('../service-layer/orders-service');
 const {retrieveCustomerCartItems} = require('../service-layer/carts-service');
 const {postNewSupplierProduct, updateSupplierProduct} = require('../service-layer/suppliers-service');
 
-const { checkUserAuthenticationWithJWT } = require('../middleware');
+const { checkSupplierAuthenticationWithJWT } = require('../middleware');
 const session = require('express-session');
 
 const generateJWT = (suppliers, tokenSecret, expirationTime) => {
@@ -106,7 +106,6 @@ router.post('/register', async(req, res)=>{
             newSupplier.set('wxId', req.body.wxId)
             newSupplier.set('phoneNumber', req.body.phoneNumber)
             newSupplier.set('password', getHashedPassword(req.body.password))
-            newSupplier.set('secret', req.body.secret)
             await newSupplier.save();
             console.log('new supplier saved')
             res.status(202).send('registration success');
@@ -116,7 +115,7 @@ router.post('/register', async(req, res)=>{
     }
 })
 
-router.get('/dashboard/:supplierId', [checkUserAuthenticationWithJWT], async(req, res)=>{
+router.get('/dashboard/:supplierId', [checkSupplierAuthenticationWithJWT], async(req, res)=>{
 
     console.log('dashboard get route hit')
     console.log('req supplier id here', req.suppliers.id)
@@ -146,7 +145,7 @@ router.get('/dashboard/:supplierId', [checkUserAuthenticationWithJWT], async(req
     }
 })
 
-router.post('/add-product/:supplierId', [checkUserAuthenticationWithJWT], async(req,res)=>{
+router.post('/add-product/:supplierId', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 
     if (req.suppliers.id == req.params.supplierId){
 
@@ -162,7 +161,7 @@ router.post('/add-product/:supplierId', [checkUserAuthenticationWithJWT], async(
     }
 })
 
-router.get('/:productId/products', [checkUserAuthenticationWithJWT], async(req,res)=>{
+router.get('/:productId/products', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
    
     console.log("supplier single product route hit, req.query here =>", req.query.supplierId)
     console.log("req.suppliers.id", req.suppliers.id)
@@ -188,7 +187,7 @@ router.get('/:productId/products', [checkUserAuthenticationWithJWT], async(req,r
     }
 })
 
-router.get('/update/:productId', [checkUserAuthenticationWithJWT], async(req,res)=>{
+router.get('/update/:productId', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 
     console.log('update get route hit', req.query.supplierId, "req.suppliers.id =>", req.suppliers.id)
 
@@ -211,7 +210,7 @@ router.get('/update/:productId', [checkUserAuthenticationWithJWT], async(req,res
 }
 )
 
-router.post('/:productId/update', [checkUserAuthenticationWithJWT], async(req,res)=>{
+router.post('/:productId/update', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 
     console.log("user single update route hit, req.query here =>", req.query.supplierId)
     console.log("req.suppliers.id at update", req.suppliers.id)
@@ -234,7 +233,7 @@ router.post('/:productId/update', [checkUserAuthenticationWithJWT], async(req,re
     }
 })
 
-router.post('/:productId/delete', [checkUserAuthenticationWithJWT], async(req,res)=>{
+router.post('/:productId/delete', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 
     console.log('delete route hit for user')
 
@@ -262,7 +261,7 @@ router.post('/:productId/delete', [checkUserAuthenticationWithJWT], async(req,re
     }
 })
 
-router.get('/check-login', [checkUserAuthenticationWithJWT], (req,res)=>{
+router.get('/check-login', [checkSupplierAuthenticationWithJWT], (req,res)=>{
     if (req.suppliers){
         console.log('jwt has not expired')
         res.status(200).send('user is authenticated')

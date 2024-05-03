@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const cartService = require('../service-layer/carts-service');
-const { checkUserAuthenticationWithJWT } = require('../middleware');
+const { checkSupplierAuthenticationWithJWT } = require('../middleware');
 
-router.get('/', [checkUserAuthenticationWithJWT], async(req,res)=>{
+router.get('/', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 
     console.log('route hit for customer cart get')
 
@@ -33,7 +33,7 @@ router.get('/', [checkUserAuthenticationWithJWT], async(req,res)=>{
 })
 
 
-router.post('/deleteItem', [checkUserAuthenticationWithJWT], async(req,res)=>{
+router.post('/deleteItem', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 
     console.log('delete entry route hit')
 

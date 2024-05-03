@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 // ORM relations
-const { admin, Product, User, BlackListedToken, Session, Cart_Item, Order_Item, products } = require('../models');
+const { admin, products, suppliers, BlackListedToken, Session, carts, orders, productVersion } = require('../models');
 
 // Forms
 const { bootstrapField, 
@@ -14,8 +14,8 @@ const { bootstrapField,
         createProductForm, 
         createSearchForm, 
         createRegisterForm, 
-        createUserSearchForm, 
-        createUserProductsSearchForm,
+        createSupplierSearchForm, 
+        createSupplierProductsSearchForm,
         createCartSearchForm,
         createOrderSearchForm
      } = require('../forms'); 
@@ -124,8 +124,8 @@ router.post('/login', async(req, res)=>{
 
             if (foundAdmin){
 
-                const accessToken = generateJWT(foundAdmin.toJSON(), process.env.ACCESS_TOKEN_SECRET, "10s");
-                const refreshToken = generateJWT(foundAdmin.toJSON(), process.env.REFRESH_TOKEN_SECRET, "4h");
+                const accessToken = generateJWT(foundAdmin.toJSON(), process.env.ACCESS_TOKEN_SECRET, "1h");
+                const refreshToken = generateJWT(foundAdmin.toJSON(), process.env.REFRESH_TOKEN_SECRET, "1d");
 
                 console.log('found admin in db')
 

@@ -1,6 +1,6 @@
 const { default: knex } = require('knex');
 const { suppliers , products, productVersion } = require('../models');
-const router = require('../routes/users');
+// const router = require('../routes/suppliers');
 const { checkUserAuthenticationWithJWT } = require('../middleware');
 
 

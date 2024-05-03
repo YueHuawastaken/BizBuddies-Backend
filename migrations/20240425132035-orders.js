@@ -25,6 +25,7 @@ exports.up = function(db) {
     productVersion_id :{
       "type":"int",
       "notNull": true,
+      "unsigned": true,
       "foreignKey":{
         "name": "orders_productVersion_fk",
         "table": "productVersion",
@@ -38,6 +39,7 @@ exports.up = function(db) {
     customer_id :{
       "type":"int",
       "notNull": true,
+      "unsigned": true,
       "foreignKey":{
         "name": "orders_customer_fk",
         "table": "customers",
@@ -61,6 +63,7 @@ exports.up = function(db) {
       supplier_id:{
         "type":"int",
         "notNull": true,
+        "unsigned": true,
         "foreignKey":{
           "name": "orders_supplier_fk",
           "table": "suppliers",
