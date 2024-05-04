@@ -1,0 +1,10 @@
+{{#extends 'base'}}
+{{#block 'content'}}
+    <h3> Register </h3>
+    <form method="POST" class="ms-1" style="max-width:350px">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+        {{{adminForm}}}
+        <input type="submit" class="btn btn-secondary mt-4"/>
+    </form>
+{{/block}}
+{{/extends}}

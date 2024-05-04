@@ -1,0 +1,50 @@
+{{#extends 'base'}}
+
+{{#block "content"}}
+
+<div>
+    <a href="/admin/orders"" class="mt-3 mb-3 btn btn-dark btn-sm"> Go Back </a>
+</div>
+
+<h4>Are you sure you want to update this order? order id: <span style="color:gray;">{{orders.[0].order_id}}</span></h4>
+<h4>This order belongs to: user id: <span style="color:gray;">{{orders.[0].user_id}} </span></h4>
+<form method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+
+<table class="table">
+    <thead>
+        <tr style="text-align:center">
+          <th>Order ID</th>
+          <th>Product ID</th>
+          <th>Product Name</th>
+          <th>Product Version</th>
+          <th>Price</th>
+          <th>Studio/Shop Name</th>                    
+          <th>Date Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each orders}}
+            <tr style="text-align:center;">
+            <td style="padding-top:12px;">{{this.order_id}}</td>
+            <td style="padding-top:12px;">{{this.products.product_id}}</td>
+            <td style="padding-top:12px;">{{this.products.productName}}</td>
+            <td style="padding-top:12px;">{{this.productVersion.versionName}}</td>
+            <td style="padding-top:12px;">{{this.productVersion.price}}</td>
+            <td style="padding-top:12px;">{{this.suppliers.studioShopName}}</td>
+            <td style="padding-top:12px;">{{this.date_time}}</td>
+                <td>
+                    <a href="/admin/orders/delete-item/?orderId={{this.order_id}}&productId={{this.productVersion_id}}" class="btn btn-dark btn-sm"> Delete Item </a>
+                </td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>
+    <div class="alert alert-secondary">
+        <a href="/admin/orders" class="ml-2 me-4 btn btn-secondary btn-sm"> Go Back </a>
+    </div>
+</form>
+{{/block}}
+{{#block 'js'}}
+{{/block}}
+{{/extends}}

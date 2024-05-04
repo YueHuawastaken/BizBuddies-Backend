@@ -10,16 +10,15 @@
                     <a class="nav-link" href="/admin/products">Products</a>
                 </li>
                 <li class="nav-item ms-2 mr-2">
-                    <a class="nav-link" href="/admin/suppliers">Manage Suppliers</a>
+                    <a class="nav-link" href="/admin/suppliers">Manage Users</a>
                 </li>
                 <li class="nav-item ms-2 mr-2">
                     <a class="nav-link" href="/admin/add-product">List new product</a>
                 </li>
                 <li class="nav-item ms-2 mr-2">
                     <a class="nav-link" href="/admin/carts">Manage Carts</a>
-                </li>                  
                 </li>
-                    <li class="nav-item ms-2 mr-2">
+                <li class="nav-item ms-2 mr-2">
                     <a class="nav-link" href="/admin/orders">Manage Orders</a>
                 </li>                    
             </ul>
@@ -31,59 +30,49 @@
         </div>
     </nav>
 {{/block}}
+
 {{#block "content"}}
 
 <div class="d-flex align-items-center">
     <button id="search-toggle" class="btn btn-light btn-sm ms-2 mt-2 me-2" style="border: 1px solid silver;"> = </button>
-    <h4 class="ms-2 mt-2 mb-0">Products</h4>
+    <h5 class="ms-2 mt-2 mb-3">Suppliers</h5>
 </div>
 
-<div class="container-fluid mt-3 ms-0">
+<div class="container-fluid mt-0 ms-2">
     <div class="row">
         <div id="search-form" class="col-md-2">
-            <form method="GET" style="max-width:230px">
+            <form method="GET" style="max-width:230px; margin-top: 15px;">
                 <h6> Search </h6>
                 <div style="font-family: Montserrat, sans-serif; font-size:13px; margin-top: 10px;">
-                    {{{adminForm}}}
+                    {{{searchForm}}}
                 </div>
                 <input type="submit" class="mb-2 mt-3 btn btn-dark btn-sm"/>
             </form>
         </div>
-        <div id="listing-table" class="col-md-10">
-            <table class="table">
+        <div id="suppliers-table" class="col-md-10">
+            <table class="table" style="text-align: center">
                 <thead>
-                    <tr style="text-align: center">
+                    <tr>
                         <th>ID</th>
-                        <th>Product Name</th>
-                        <th>Description</th>
-                        <th>Version Name</th>
-                        <th>Price</th>
-                        <th>Date Created</th>
-                        <th>Image</th>
-                        <th></th>
-                        <th></th>
+                        <th>Studio/Shop Name</th>
+                        <th>Wx Id</th>
+                        <th>Zhi Fu Verification</th>
+                        <th>Phone Number</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{#each products}}
-                    <tr style="text-align: center">
+                    {{#each suppliers}}
+                    <tr>
                         <td>{{this.id}}</td>
-                        <td>{{this.productName}}</td>
-                        <td>{{this.productVersion.versionName}}</td>
-                        <td>{{this.description}}</td>
-                        <td>{{this.productVersion.price}}</td>
-                        <td>{{this.suppliers.studioShopName}}</td>
-                        <td>{{this.date_created}}</td>
+                        <td>{{this.studioShopName}}</td>
+                        <td>{{this.wxId}}</td>
+                        <td>{{this.zhiFuVerification}}</td>
+                        <td>{{this.phoneNumber}}</td>
                         <td>
-                             {{#if productVersion.image_url}}
-                        <img src="{{this.productVersion.image_url}}" class="img-fluid" alt="image">
-                             {{/if}}
+                            <a href="/admin/suppliers/{{this.id}}/delete" class="btn btn-danger btn-sm"> Delete Supplier </a>
                         </td>
                         <td>
-                            <a href="/admin/products/{{this.id}}/update" class="btn btn-light btn-sm">Update</a>
-                        </td>
-                        <td>
-                            <a href="/admin/products/{{this.id}}/delete" class="btn btn-dark btn-sm">Delete</a>
+                            <a href="/admin/suppliers/{{this.id}}/products" class="btn btn-secondary btn-sm">Supplier Products</a>
                         </td>
                     </tr>
                     {{/each}}
@@ -93,20 +82,25 @@
     </div>
 </div>
 {{/block}}
+
 {{#block 'js'}}
     <script>
         let searchToggle = document.querySelector('#search-toggle');
         let searchForm = document.querySelector('#search-form');
-        let listingTable = document.querySelector('#listing-table');
+        let suppliersTable = document.querySelector('#suppliers-table');
 
         searchToggle.addEventListener('click', ()=>{
             searchForm.style.display = searchForm.style.display === 'none'? 'inline' : 'none';
-            if (listingTable.classList === 'col-md-10'){
-                listingTable.classList.toggle('col-md-12')
+            if (suppliersTable.classList === 'col-md-10'){
+                suppliersTable.classList.toggle('col-md-12')
             } else {
-                listingTable.classList.toggle('col-md-10')
+                suppliersTable.classList.toggle('col-md-10')
             }
         })
     </script>
 {{/block}}
+
+
+
+
 {{/extends}}

@@ -1,0 +1,68 @@
+{{#extends 'base'}}
+
+{{#block "content"}}
+<a href="#" onclick="goBack()" class="mt-3 mb-3 btn btn-secondary btn-sm"> Go Back </a>
+
+<h4> Create new product </h4>
+
+<form method="POST" style="max-width:600px">
+    {{{form}}}
+    <div>
+        <button class="mt-3 mb-1 btn btn-secondary btn-sm" id="upload_widget"> Upload Image </button>
+        <img src="" id="uploaded_image" style="display:none" class="img-fluid"/>
+    </div>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    <input type="submit" class="mt-3 btn btn-dark"/>
+    <Div style="height: 40px">
+    </Div>
+</form>
+{{/block}}
+
+{{#block "js"}}
+<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js" integrity="sha512-aoTNnqZcT8B4AmeCFmiSnDlc4Nj/KPaZyB5G7JnOnUEkdNpCZs1LCankiYi01sLTyWy+m2P+W4XM+BuQ3Q4/Dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    const cloudinaryWidget = cloudinary.createUploadWidget({
+        cloudName:"{{cloudinaryName}}",
+        apiKey:"{{cloudinaryApiKey}}",
+        uploadPreset:"{{cloudinaryPreset}}",
+        uploadSignature: async function(callback, params_to_sign){
+            const response = await axios.get('/cloudinary/signature',{
+                params:{
+                    params_to_sign
+                }
+            })
+            console.log('cloudinary Widget get response =>', response.data)
+            callback(response.data)
+        }
+    }, function(error, result){
+        if (!error && result.event == 'success'){
+            console.log(result)
+
+            console.log('cloudinary is working');
+            const imageUrl = result.info.url;
+            console.log(imageUrl);
+
+            document.querySelector("#id_image_url").value = imageUrl; //Populating the resulting html elements created under forms with imageUrl from cloudinary. id_form_field_name is the default for form fields created in this manner
+
+            document.querySelector("#uploaded_image").src = imageUrl; //Populating src
+            document.querySelector("#uploaded_image").style.display = "block";
+            
+            console.log('cloudinary data retrieved')
+        } else {
+            console.log('Cloudinary Widget Error=>', error);
+        }
+    })
+
+    document.querySelector("#upload_widget").addEventListener("click", event => {
+        event.preventDefault();     //prevent clickthrough
+        cloudinaryWidget.open();            //open embedded widget instead
+    })
+
+    function goBack(){
+        window.history.back();
+    }
+</script>
+{{/block}}
+{{/extends}}

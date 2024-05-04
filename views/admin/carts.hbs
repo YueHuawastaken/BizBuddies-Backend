@@ -17,9 +17,8 @@
                 </li>
                 <li class="nav-item ms-2 mr-2">
                     <a class="nav-link" href="/admin/carts">Manage Carts</a>
-                </li>                  
-                </li>
-                    <li class="nav-item ms-2 mr-2">
+                </li>                    
+                <li class="nav-item ms-2 mr-2">
                     <a class="nav-link" href="/admin/orders">Manage Orders</a>
                 </li>                    
             </ul>
@@ -31,59 +30,48 @@
         </div>
     </nav>
 {{/block}}
+
 {{#block "content"}}
 
 <div class="d-flex align-items-center">
     <button id="search-toggle" class="btn btn-light btn-sm ms-2 mt-2 me-2" style="border: 1px solid silver;"> = </button>
-    <h4 class="ms-2 mt-2 mb-0">Products</h4>
+    <h5 class="ms-2 mt-2 mb-3">Carts</h5>
 </div>
 
-<div class="container-fluid mt-3 ms-0">
+<div class="container-fluid mt-0 ms-2">
     <div class="row">
         <div id="search-form" class="col-md-2">
-            <form method="GET" style="max-width:230px">
+            <form method="GET" style="max-width:230px; margin-top: 15px;">
                 <h6> Search </h6>
                 <div style="font-family: Montserrat, sans-serif; font-size:13px; margin-top: 10px;">
-                    {{{adminForm}}}
+                    {{{searchForm}}}
                 </div>
                 <input type="submit" class="mb-2 mt-3 btn btn-dark btn-sm"/>
             </form>
         </div>
-        <div id="listing-table" class="col-md-10">
-            <table class="table">
+        <div id="carts-table" class="col-md-10">
+            <table class="table" style="text-align: center">
                 <thead>
-                    <tr style="text-align: center">
-                        <th>ID</th>
+                    <tr>
+                        <th>Cart ID</th>
+                        <th>Product ID</th>
                         <th>Product Name</th>
-                        <th>Description</th>
-                        <th>Version Name</th>
-                        <th>Price</th>
-                        <th>Date Created</th>
-                        <th>Image</th>
-                        <th></th>
-                        <th></th>
+                        <th>Product Version</th>
+                        <th>Price</th>                      
+                        <th>Date Time</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{#each products}}
-                    <tr style="text-align: center">
-                        <td>{{this.id}}</td>
+                    {{#each carts}}
+                    <tr>
+                        <td>{{this.cart_id}}</td>
+                        <td>{{this.product_id}}</td>
                         <td>{{this.productName}}</td>
                         <td>{{this.productVersion.versionName}}</td>
-                        <td>{{this.description}}</td>
                         <td>{{this.productVersion.price}}</td>
-                        <td>{{this.suppliers.studioShopName}}</td>
-                        <td>{{this.date_created}}</td>
+                        <td>{{this.date_time}}</td>
                         <td>
-                             {{#if productVersion.image_url}}
-                        <img src="{{this.productVersion.image_url}}" class="img-fluid" alt="image">
-                             {{/if}}
-                        </td>
-                        <td>
-                            <a href="/admin/products/{{this.id}}/update" class="btn btn-light btn-sm">Update</a>
-                        </td>
-                        <td>
-                            <a href="/admin/products/{{this.id}}/delete" class="btn btn-dark btn-sm">Delete</a>
+                            <a href="/admin/carts/{{this.cart_id}}/delete-cart" class="btn btn-secondary btn-sm"> Delete Cart </a>
                         </td>
                     </tr>
                     {{/each}}
@@ -93,18 +81,19 @@
     </div>
 </div>
 {{/block}}
+
 {{#block 'js'}}
     <script>
         let searchToggle = document.querySelector('#search-toggle');
         let searchForm = document.querySelector('#search-form');
-        let listingTable = document.querySelector('#listing-table');
+        let cartsTable = document.querySelector('#carts-table');
 
         searchToggle.addEventListener('click', ()=>{
             searchForm.style.display = searchForm.style.display === 'none'? 'inline' : 'none';
-            if (listingTable.classList === 'col-md-10'){
-                listingTable.classList.toggle('col-md-12')
+            if (cartsTable.classList === 'col-md-10'){
+                cartsTable.classList.toggle('col-md-12')
             } else {
-                listingTable.classList.toggle('col-md-10')
+                cartsTable.classList.toggle('col-md-10')
             }
         })
     </script>
