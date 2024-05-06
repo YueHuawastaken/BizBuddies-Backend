@@ -54,6 +54,7 @@ router.post('/login', async(req, res)=>{
                 req.session.suppliers = {
                     id: foundSupplier.get('id'),
                     phoneNumber: foundSupplier.get('phoneNumber'),
+                    studioShopName: foundSupplier.get('studioShopName'),
                     ipAddress: req.ip,
                     date: new Date(),
                 }
@@ -64,7 +65,8 @@ router.post('/login', async(req, res)=>{
                 console.log('session here', req.session.suppliers)
 
                 res.json({
-                    "accessToken": accessToken, "refreshToken": refreshToken, "supplier_id": req.session.suppliers.id, "phoneNumber": phoneNumber
+                    "accessToken": accessToken, "refreshToken": refreshToken, "supplier_id": req.session.suppliers.id, "phoneNumber": phoneNumber,
+                    "studioShopName" : req.session.suppliers.studipShopName
                 })
             } else {
                 res.status(403).send("Supplier not found")
