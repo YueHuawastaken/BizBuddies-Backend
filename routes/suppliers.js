@@ -66,7 +66,7 @@ router.post('/login', async(req, res)=>{
 
                 res.json({
                     "accessToken": accessToken, "refreshToken": refreshToken, "supplier_id": req.session.suppliers.id, "phoneNumber": phoneNumber,
-                    "studioShopName" : req.session.suppliers.studipShopName
+                    "studioShopName" : req.session.suppliers.studioShopName
                 })
             } else {
                 res.status(403).send("Supplier not found")
@@ -128,11 +128,13 @@ router.get('/dashboard/:supplierId', [checkSupplierAuthenticationWithJWT], async
 
         try{
 
-            let supplierProducts = await findSupplierById(req.params.supplierId)
-
+            let supplier = await findSupplierById(req.params.supplierId)
+            console.log(supplier.get('studioShopName'));
+            let supplierProducts = await findProductsByStudioShopName (supplier.get('studioShopName'))
+            console.log(supplierProducts);
             if (supplierProducts.length > 0){
 
-                res.json({"products":supplierProducts.toJSON()})
+                res.json({"products":supplierProducts})
 
             } else {
 
@@ -140,6 +142,7 @@ router.get('/dashboard/:supplierId', [checkSupplierAuthenticationWithJWT], async
             }
 
         } catch (error) {
+            console.log(error)
             res.status(500).json({error: "Failed to fetch products"})
         }
     } else {

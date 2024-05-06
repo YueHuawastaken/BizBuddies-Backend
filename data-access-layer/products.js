@@ -94,11 +94,15 @@ const findProductsByStudioShopName = async (studioShopName) => {
     
     try{
         const productsFoundByStudioShopName = await productVersion
+        // .query(qb => {
+        //     qb.innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
+        //       .whereRaw('LOWER(suppliers.studioShopName) LIKE LOWER(?)', `%${studioShopName}%`);
+        // })
             .innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
             .whereILike('suppliers.studioShopName', `%${studioShopName}`)
             .fetchAll({
                 withRelated: [  {
-                    'products': (queryBuild) => {
+                    'products': (queryBuild) => {   
                         queryBuild.select('id', 'productName', 'description' )
                         }
                     },

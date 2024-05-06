@@ -9,8 +9,9 @@ const findSupplierById = async (supplier_id) => {
     try{
         const supplierFoundById = await suppliers.where({
             'id': supplier_id
-        }).fetchAll().map(suppliers=> [suppliers.get('studioShopName'), suppliers.get( 'zhiFuVerification'),
-    suppliers.get('phoneNumber'), suppliers.get('wxId'), suppliers.get('password')])
+        }).fetch()
+    //     .map(suppliers=> [suppliers.get('studioShopName'), suppliers.get( 'zhiFuVerification'),
+    // suppliers.get('phoneNumber'), suppliers.get('wxId'), suppliers.get('password')])
         return supplierFoundById;
     } catch (error){
         console.error('error finding supplier by Id', error)
@@ -25,12 +26,15 @@ const addSupplierProductListing = async (payload) => {
         const product = new products();
         product.set('productName',  payload.productName);
         product.set('description',  payload.description);
-        product.set('versionName',  payload.versionName);
-        product.set('image_url',  payload.image_url);
-        product.set('price',  payload.price); 
-        product.set('studioShopName',  payload.studioShopName)
+        const newproductVersion = new productVersion();
+        newproductVersion.set('versionName',  payload.versionName);
+        newproductVersion.set('image_url',  payload.image_url);
+        newproductVersion.set('price',  payload.price); 
+        newproductVersion.set('supplier_id',  payload.supplier_id)
         try{
             await product.save();
+            newproductVersion.set('product_id',  product.get('id'));
+            await newproductVersion.save()
             console.log('success save product', product.toJSON())
         } catch (error) {
             console.log('fail to save products', error)
