@@ -140,8 +140,51 @@ const checkSupplierAuthenticationWithJWT = (req, res, next) => {
     }
 }
 
+const checkCustomerAuthenticationWithJWT = (req, res, next) => {
+
+    const authHeader = req.headers.authorization;
+    console.log('auth header here', authHeader);
+
+    if(authHeader){
+
+        const token = authHeader.split(" ")[1];
+
+        console.log('token here', token)
+
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function(error, payload){
+            
+            console.log('jwt verify hit')
+
+            if(error){
+                
+                if (error.message === "jwt expired"){
+
+                    console.log('jwt expired')    
+                    return res.status(400).send("Login expired, please log in again")
+
+                } else {
+                    console.log('jwt verify error hit')
+                    res.status(401);
+                    return res.json({error})
+                }
+
+            } else {
+                console.log('Login successful')
+                req.customers = payload;
+                console.log('req.customers here', req.customers)
+                next();
+            }
+        })
+    } else {
+        console.log('unauth hit')
+        res.status(401);
+        res.send('User must be logged in to view page')
+    }
+}
+
 module.exports =    {
                         checkSessionAuthentication,
                         checkAuthenticationWithJWT,
                         checkSupplierAuthenticationWithJWT,
+                        checkCustomerAuthenticationWithJWT,
                     }

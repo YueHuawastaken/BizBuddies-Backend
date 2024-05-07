@@ -50,7 +50,7 @@ exports.up = function(db) {
       'scale': 2,        
       'notNull': true
       },
-      'supplier_id':{
+      supplier_id:{
         "type":"int",
         "notNull": true,
         'unsigned': true,
