@@ -20,8 +20,8 @@ const findProductById = async (product_Id) => {
     return product;
 }
 
-const findProductsByStudioShopName = async (studioShopName) => {
-    let product = await productsDataAccess.findProductsByStudioShopName(studioShopName);
+const getProductVersionsBySupplier = async (supplier_id) => {
+    let product = await productsDataAccess.getProductVersionsBySupplier(supplier_id);
     return product;
 }
 
@@ -37,5 +37,5 @@ const searchProductsBySearchForm = async (payload) => {
 
 module.exports= {
     retrieveAllProducts, retrieveAllProductVersion, retrieveAllSuppliers, findProductById, 
-    addProductListing, findProductsByStudioShopName,searchProductsBySearchForm
+    addProductListing, getProductVersionsBySupplier,searchProductsBySearchForm
                 }

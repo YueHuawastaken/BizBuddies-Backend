@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const {suppliers} = require('../models');
 
 const {findSupplierById} = require('../data-access-layer/suppliers');
-const {findProductsByStudioShopName, findProductById} = require('../service-layer/products-service');
+const {getProductVersionsBySupplier, findProductById} = require('../service-layer/products-service');
 const {retrieveOrderByCustomerId} = require('../service-layer/orders-service');
 const {retrieveCustomerCartItems} = require('../service-layer/carts-service');
 const {postNewSupplierProduct, updateSupplierProduct} = require('../service-layer/suppliers-service');
@@ -127,10 +127,7 @@ router.get('/dashboard/:supplierId', [checkSupplierAuthenticationWithJWT], async
         console.log('passed supplier basic authorization')
 
         try{
-
-            let supplier = await findSupplierById(req.params.supplierId)
-            console.log(supplier.get('studioShopName'));
-            let supplierProducts = await findProductsByStudioShopName (supplier.get('studioShopName'))
+            let supplierProducts = await getProductVersionsBySupplier (req.suppliers.id)
             console.log(supplierProducts);
             if (supplierProducts.length > 0){
 
@@ -168,12 +165,12 @@ router.post('/add-product/:supplierId', [checkSupplierAuthenticationWithJWT], as
 
 router.get('/:productId/products', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
    
-    console.log("supplier single product route hit, req.query here =>", req.query.supplierId)
+    console.log("supplier single product route hit, req.query here =>", req.query.supplier_id)
     console.log("req.suppliers.id", req.suppliers.id)
 
-    let supplierId = parseInt(req.query.supplierId)
+    let supplier_id = parseInt(req.query.supplier_id)
 
-    if (req.suppliers.id === supplierId){
+    if (req.suppliers.id === supplier_id){
 
         console.log('passed authorization check');
 

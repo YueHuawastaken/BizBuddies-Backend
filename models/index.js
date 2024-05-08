@@ -6,6 +6,9 @@ const productVersion = bookshelf.model('productVersion', {
     products(){
         return this.belongsTo('products')
     },
+    suppliers(){
+        return this.belongsTo('suppliers')
+    }
 });
 
 const products = bookshelf.model('products',{

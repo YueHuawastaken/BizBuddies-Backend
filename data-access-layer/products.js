@@ -52,18 +52,20 @@ const findProductById = async (product_Id) => {
             'id': product_Id
         }).fetch({
             require:true,
-            withRelated: [  {
-                'productVersion': (queryBuild) => {
-                    queryBuild.select('id', 'versionName', 'image_url', 'price', )
-                    }
-                },
-                {
-                    'suppliers' : (queryBuild) => {
-                        queryBuild.select('studioShopName')
-                    }
-                }
+            withRelated: ['productVersion', 'productVersion.suppliers'
+                // {
+                // 'productVersion': (queryBuild) => {
+                //     queryBuild.select('versionName', 'image_url', 'price', )
+                //     }
+                // },
+                // {
+                //     'suppliers' : (queryBuild) => {
+                //         queryBuild.select('studioShopName')
+                //     }
+                // }
             ]
         })
+        console.log(productFoundById)
         return productFoundById;
 
     } catch (error){
@@ -90,40 +92,58 @@ const addProductListing = async (productForm) => {
     }
 }
 
-const findProductsByStudioShopName = async (studioShopName) => {
-    
-    try{
-        const productsFoundByStudioShopName = await productVersion
-        // .query(qb => {
-        //     qb.innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
-        //       .whereRaw('LOWER(suppliers.studioShopName) LIKE LOWER(?)', `%${studioShopName}%`);
-        // })
-            .innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
-            .whereILike('suppliers.studioShopName', `%${studioShopName}`)
-            .fetchAll({
-                withRelated: [  {
-                    'products': (queryBuild) => {   
-                        queryBuild.select('id', 'productName', 'description' )
-                        }
-                    },
-                     {
-                    'productVersion': (queryBuild) => {
-                        queryBuild.select('id', 'versionName', 'image_url', 'price', )
-                        }
-                    },
-                    {
-                        'suppliers' : (queryBuild) => {
-                            queryBuild.select('studioShopName')
-                        }
-                    }
-                ]
+async function getProductVersionsBySupplier(supplier_id) {
+    try {
+        return await productVersion
+            .query(qb => {
+                qb.innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
+                .where('suppliers.id', '=', supplier_id);
             })
-        return productsFoundByStudioShopName;
-
-    } catch (error){
-        console.error('error finding product by StudioShop Name', error)
+            .fetchAll({
+                withRelated: [
+                    'products' // Assuming you want to fetch related products data
+                ]
+            });
+    } catch (error) {
+        console.log("Error retrieving products by supplier id")
     }
+    
 }
+
+// const findProductsByStudioShopName = async (studioShopName) => {
+    
+//     try{
+//         const productsFoundByStudioShopName = await productVersion
+//         // .query(qb => {
+//         //     qb.innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
+//         //       .whereRaw('LOWER(suppliers.studioShopName) LIKE LOWER(?)', `%${studioShopName}%`);
+//         // })
+//             .innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
+//             .whereILike('suppliers.studioShopName', `%${studioShopName}`)
+//             .fetchAll({
+//                 withRelated: [  {
+//                     'products': (queryBuild) => {   
+//                         queryBuild.select('id', 'productName', 'description' )
+//                         }
+//                     },
+//                      {
+//                     'productVersion': (queryBuild) => {
+//                         queryBuild.select('id', 'versionName', 'image_url', 'price', )
+//                         }
+//                     },
+//                     {
+//                         'suppliers' : (queryBuild) => {
+//                             queryBuild.select('studioShopName')
+//                         }
+//                     }
+//                 ]
+//             })
+//         return productsFoundByStudioShopName;
+
+//     } catch (error){
+//         console.error('error finding product by StudioShop Name', error)
+//     }
+// }
 
 const searchProductsBySearchForm = async (payload)=>{
 
@@ -176,5 +196,5 @@ const searchProductsBySearchForm = async (payload)=>{
 
 module.exports = {
     retrieveAllProducts, retrieveAllProductVersion, retrieveAllSuppliers, findProductById, 
-    addProductListing, findProductsByStudioShopName,searchProductsBySearchForm
+    addProductListing, getProductVersionsBySupplier,searchProductsBySearchForm
 }
