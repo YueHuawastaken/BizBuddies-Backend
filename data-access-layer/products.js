@@ -90,39 +90,52 @@ const addProductListing = async (productForm) => {
     }
 }
 
-const findProductsByStudioShopName = async (studioShopName) => {
+// const findProductsByStudioShopName = async (studioShopName) => {
     
-    try{
-        const productsFoundByStudioShopName = await productVersion
-        // .query(qb => {
-        //     qb.innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
-        //       .whereRaw('LOWER(suppliers.studioShopName) LIKE LOWER(?)', `%${studioShopName}%`);
-        // })
-            .innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
-            .whereILike('suppliers.studioShopName', `%${studioShopName}`)
-            .fetchAll({
-                withRelated: [  {
-                    'products': (queryBuild) => {   
-                        queryBuild.select('id', 'productName', 'description' )
-                        }
-                    },
-                     {
-                    'productVersion': (queryBuild) => {
-                        queryBuild.select('id', 'versionName', 'image_url', 'price', )
-                        }
-                    },
-                    {
-                        'suppliers' : (queryBuild) => {
-                            queryBuild.select('studioShopName')
-                        }
-                    }
-                ]
-            })
-        return productsFoundByStudioShopName;
+//     try{
+//         const productsFoundByStudioShopName = await productVersion
+//         // .query(qb => {
+//         //     qb.innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
+//         //       .whereRaw('LOWER(suppliers.studioShopName) LIKE LOWER(?)', `%${studioShopName}%`);
+//         // })
+//             .innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
+//             .whereILike('suppliers.studioShopName', `%${studioShopName}`)
+//             .fetchAll({
+//                 withRelated: [  {
+//                     'products': (queryBuild) => {   
+//                         queryBuild.select('id', 'productName', 'description' )
+//                         }
+//                     },
+//                      {
+//                     'productVersion': (queryBuild) => {
+//                         queryBuild.select('id', 'versionName', 'image_url', 'price', )
+//                         }
+//                     },
+//                     {
+//                         'suppliers' : (queryBuild) => {
+//                             queryBuild.select('studioShopName')
+//                         }
+//                     }
+//                 ]
+//             })
+//         return productsFoundByStudioShopName;
 
-    } catch (error){
-        console.error('error finding product by StudioShop Name', error)
-    }
+//     } catch (error){
+//         console.error('error finding product by StudioShop Name', error)
+//     }
+// }
+
+async function getProductVersionsBySupplier(studioId) {
+    return await productVersion
+        .query(qb => {
+            qb.innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
+              .where('suppliers.id', '=', studioId);
+        })
+        .fetchAll({
+            withRelated: [
+                'products' // Assuming you want to fetch related products data
+            ]
+        });
 }
 
 const searchProductsBySearchForm = async (payload)=>{
@@ -176,5 +189,5 @@ const searchProductsBySearchForm = async (payload)=>{
 
 module.exports = {
     retrieveAllProducts, retrieveAllProductVersion, retrieveAllSuppliers, findProductById, 
-    addProductListing, findProductsByStudioShopName,searchProductsBySearchForm
+    addProductListing, getProductVersionsBySupplier,searchProductsBySearchForm
 }

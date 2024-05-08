@@ -82,6 +82,7 @@ app.use(function(req,res,next){
 
 // flash messages for template usage only
 app.use(function(req,res,next){
+    console.log(req.flash)
     const successMessages = req.flash("success");
     const errorMessages = req.flash("error");
     res.locals.success_messages = successMessages;

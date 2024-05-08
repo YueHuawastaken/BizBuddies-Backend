@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { bootstrapField, createProductForm, createSearchForm } = require('../forms'); 
 const { retrieveAllProducts, retrieveAllProductVersion, findProductById, 
-    addProductListing, findProductsByStudioShopName} = require("../service-layer/products-service");
+    addProductListing, findProductsByStudioID} = require("../service-layer/products-service");
 
 router.get('/', async(req,res)=>{
 
@@ -20,7 +20,7 @@ router.get('/:productId', async(req,res)=>{
 
 router.get('/suppliers/:supplierId', async(req,res)=>{
     let supplier_id = req.params.supplierId;
-    let supplierProducts = await findProductsByStudioShopName(supplier_id);
+    let supplierProducts = await findProductsByStudioID(supplier_id);
     res.json({'products': supplierProducts.toJSON()})
 })
 
