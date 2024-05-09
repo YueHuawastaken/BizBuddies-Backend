@@ -22,7 +22,7 @@ const { bootstrapField,
 
 // DAL logics with spare DAL methods for usage when not using DB query
 const { retrieveAllProducts, retrieveAllProductVersion, retrieveAllSuppliers, findProductById, 
-    addProductListing, findProductsByStudioShopName,searchProductsBySearchForm } = require("../data-access-layer/products");
+    addProductListing, getProductVersionsBySupplier,searchProductsBySearchForm } = require("../data-access-layer/products");
 const { findSupplierById, addSupplierProductListing, updateSupplierProductListing } = require("../data-access-layer/suppliers");
 const { retrieveAllOrders,
     retrieveOrderByCustomerId,

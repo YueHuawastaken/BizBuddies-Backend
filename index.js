@@ -107,10 +107,10 @@ const productRoutes = require('./routes/products');
 const supplierRoutes = require('./routes/suppliers');
 const adminRoutes = require('./routes/admin');
 const cloudinaryRoutes = require('./routes/cloudinary');
-const searchRoutes = require('./routes/search')
+const searchRoutes = require('./routes/search');
 const checkoutRoutes = require('./routes/checkout');
 const cartRoutes = require('./routes/carts');
-const orderRoutes = require('./routes/orders')
+const orderRoutes = require('./routes/orders');
 
 async function main(){
 

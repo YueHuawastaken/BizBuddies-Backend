@@ -52,16 +52,7 @@ const updateSupplierProductListing = async (payload) => {
         'id': payload.productId
     }).fetch({
         require:true,
-        withRelated: [  {
-            'productVersion': (queryBuild) => {
-                queryBuild.select('id', 'versionName', 'image_url', 'price', )
-                }
-            },
-            {
-                'suppliers' : (queryBuild) => {
-                    queryBuild.select('studioShopName')
-                }
-            }
+        withRelated: ['productVersion', 'productVersion.suppliers'
         ]
     })
 

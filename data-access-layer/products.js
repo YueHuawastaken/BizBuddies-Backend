@@ -46,10 +46,10 @@ const retrieveAllSuppliers = async () => {
     }
 }
 
-const findProductById = async (product_Id) => {
+const findProductById = async (productId) => {
     try{
         const productFoundById = await products.where({
-            'id': product_Id
+            'id': productId
         }).fetch({
             require:true,
             withRelated: ['productVersion', 'productVersion.suppliers'

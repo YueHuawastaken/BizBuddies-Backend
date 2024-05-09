@@ -15,8 +15,8 @@ const retrieveAllSuppliers = async () => {
     return suppliers;
 }
 
-const findProductById = async (product_Id) => {
-    let product = await productsDataAccess.findProductById(product_Id);
+const findProductById = async (productId) => {
+    let product = await productsDataAccess.findProductById(productId);
     return product;
 }
 
