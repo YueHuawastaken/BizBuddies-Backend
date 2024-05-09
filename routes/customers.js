@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const {customers} = require('../models');
 
 
-const {findProductsByStudioShopName, findProductById} = require('../service-layer/products-service');
+const {getProductVersionsBySupplier, findProductById} = require('../service-layer/products-service');
 const {retrieveOrderByCustomerId} = require('../service-layer/orders-service');
 const {retrieveCustomerCartItems} = require('../service-layer/carts-service');
 

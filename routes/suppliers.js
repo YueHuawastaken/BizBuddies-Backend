@@ -197,10 +197,10 @@ router.get('/:supplierId/update/:productId', [checkSupplierAuthenticationWithJWT
 
     if (req.suppliers.id === supplierId){
 
-        const productId = req.params.productId;
+        const product_id = req.params.productId;
 
         try{
-            const product = await findProductById(productId);
+            const product = await findProductById(product_id);
             res.json({"product": product.toJSON()})
 
         } catch (error){
@@ -216,15 +216,15 @@ router.post('/:supplierId/:productId/update', [checkSupplierAuthenticationWithJW
 
     console.log("user single update route hit, req.query here =>", req.params.supplierId)
     console.log("req.suppliers.id at update", req.suppliers.id)
+    let product_id = parseInt(req.params.productId)
+    let supplier_id = parseInt(req.params.supplierId)
 
-    let supplierId = parseInt(req.params.supplierId)
-
-    if (req.suppliers.id === supplierId){
+    if (req.suppliers.id === supplier_id){
         let payload = req.body
 
         console.log('update route authorization achieved')
         try {
-            await updateSupplierProduct(payload);
+            await updateSupplierProduct(payload, product_id);
             console.log('successful update here');
             res.status(200).send("Product update success");
         } catch (error) {
@@ -237,11 +237,11 @@ router.post('/:supplierId/:productId/update', [checkSupplierAuthenticationWithJW
 }
 )
 
-router.post('/:productId/delete', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
+router.post('/:supplierId/:productId/delete', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 
     console.log('delete route hit for user')
 
-    let supplierId = parseInt(req.query.supplierId)
+    let supplierId = parseInt(req.params.supplierId)
 
     if (req.suppliers.id === supplierId){
 

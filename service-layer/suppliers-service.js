@@ -4,8 +4,8 @@ const postNewSupplierProduct = async (payload) => {
     await supplierDataAccess.addSupplierProductListing(payload);
 }
 
-const updateSupplierProduct = async (payload) => {
-    await supplierDataAccess.updateSupplierProductListing(payload);
+const updateSupplierProduct = async (payload, product_id) => {
+    await supplierDataAccess.updateSupplierProductListing(payload, product_id);
 }
 
 module.exports = {postNewSupplierProduct, updateSupplierProduct};

@@ -17,6 +17,9 @@ const products = bookshelf.model('products',{
 
     productVersion(){
         return this.hasMany('productVersion')
+    },
+    suppliers(){
+        return this.belongsTo('suppliers')
     }
 });
 
@@ -31,14 +34,6 @@ const suppliers = bookshelf.model('suppliers',{
     productVersion(){
         return this.hasMany('productVersion')
     },
-
-    carts(){
-        return this.hasMany('carts')
-    },
-
-    orders(){
-        return this.hasMany('orders')
-    }
 });
 
 const carts = bookshelf.model('carts',{
@@ -49,8 +44,8 @@ const carts = bookshelf.model('carts',{
     productVersion(){
         return this.hasMany('productVersion')
     },
-    suppliers(){
-        return this.hasMany('suppliers')
+    customers(){
+        return this.belongsTo('customers')
     }
 });
 
@@ -61,9 +56,6 @@ const orders = bookshelf.model('orders',{
     },
     productVersion(){
         return this.hasMany('productVersion')
-    },
-    suppliers(){
-        return this.hasMany('suppliers')
     },
     customers() {
         return this.belongsTo('customers')
@@ -80,12 +72,6 @@ const admin = bookshelf.model('admin', {
 
 const customers = bookshelf.model('customers',{
     tableName:'customers',
-    products(){
-        return this.hasMany('products')
-    },
-    productVersion(){
-        return this.hasMany('productVersion')
-    },
     orders(){
         return this.hasMany('orders')
     },
