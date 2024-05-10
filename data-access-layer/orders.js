@@ -38,11 +38,9 @@ const createNewOrder = async (payload) => {
 
 const retrieveOrderByCustomerId = async (customer_id) => {
     try{
-        const customerOrder = await orders.collection()
+        const customerOrder = await orders
                         .where({'customer_id': customer_id})
-                        .fetch({
-                            'require': false,
-                        })
+                        .fetchAll({})
         return customerOrder;
     } catch (error){
         console.error('error retrieving customer order', error)

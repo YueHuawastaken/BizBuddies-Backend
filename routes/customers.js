@@ -4,9 +4,9 @@ const router = express.Router();
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
-const {customers} = require('../models');
+const {customers, orders} = require('../models');
 
-
+const {findCustomerById} = require('../data-access-layer/customers');
 const {getProductVersionsBySupplier, findProductById} = require('../service-layer/products-service');
 const {retrieveOrderByCustomerId} = require('../service-layer/orders-service');
 const {retrieveCustomerCartItems} = require('../service-layer/carts-service');
@@ -17,7 +17,7 @@ const session = require('express-session');
 const generateJWT = (customers, tokenSecret, expirationTime) => {
     return jwt.sign({
         'phoneNumber': customers.phoneNumber,
-        'id': suppliers.id
+        'id': customers.id
     }, tokenSecret, {expiresIn: expirationTime}
     )
 }
@@ -43,17 +43,19 @@ router.post('/login', async(req, res)=>{
 
                 let customer_id = foundCustomer.get('id');
                 let phoneNumber = foundCustomer.get('phoneNumber');
+                let username = foundCustomer.get('username');
         
                 console.log('customer_id route =>', customer_id)
                 console.log('phoneNumber route =>', phoneNumber)
+                console.log('username route =>', username)
         
-                const accessToken = generateJWT(foundSupplier.toJSON(), process.env.ACCESS_TOKEN_SECRET, "3hr");
-                const refreshToken = generateJWT(foundSupplier.toJSON(), process.env.REFRESH_TOKEN_SECRET, "7d");
+                const accessToken = generateJWT(foundCustomer.toJSON(), process.env.ACCESS_TOKEN_SECRET, "3hr");
+                const refreshToken = generateJWT(foundCustomer.toJSON(), process.env.REFRESH_TOKEN_SECRET, "7d");
                 
                 req.session.customers = {
                     id: foundCustomer.get('id'),
                     phoneNumber: foundCustomer.get('phoneNumber'),
-                    studioShopName: foundSupplier.get('studioShopName'),
+                    username: foundCustomer.get('username'),
                     ipAddress: req.ip,
                     date: new Date(),
                 }
@@ -64,8 +66,8 @@ router.post('/login', async(req, res)=>{
                 console.log('session here', req.session.customers)
 
                 res.json({
-                    "accessToken": accessToken, "refreshToken": refreshToken, "supplier_id": req.session.customers.id, "phoneNumber": phoneNumber,
-                    "userName" : req.session.customers.userName
+                    "accessToken": accessToken, "refreshToken": refreshToken, "customer_id": req.session.customers.id, "phoneNumber": phoneNumber,
+                    "username" : req.session.customers.username
                 })
             } else {
                 res.status(403).send("Customer not found")
@@ -116,7 +118,7 @@ router.post('/register', async(req, res)=>{
     }
 })
 
-router.get('/dashboard/:customerId', [checkSupplierAuthenticationWithJWT], async(req, res)=>{
+router.get('/dashboard/:customerId', [checkCustomerAuthenticationWithJWT], async(req, res)=>{
 
     console.log('dashboard get route hit')
     console.log('req customer id here', req.customers.id)
@@ -127,16 +129,15 @@ router.get('/dashboard/:customerId', [checkSupplierAuthenticationWithJWT], async
 
         try{
 
-            let customer = await findCustomerById(req.params.customerId)
-            console.log(customer.get('userName'));
-            let customerOrders = await retrieveOrderByCustomerId (customer.get('customer_id'))
+            let customers = await findCustomerById(req.params.customerId)
+            console.log(customers.get('username'));
+            let customerOrders = await retrieveOrderByCustomerId (req.params.customerId)
             console.log(customerOrders);
             if (customerOrders.length > 0){
 
                 res.json({"orders":customerOrders})
 
             } else {
-
                 res.status(204).json({error: "No orders found"})
             }
 
@@ -145,6 +146,7 @@ router.get('/dashboard/:customerId', [checkSupplierAuthenticationWithJWT], async
             res.status(500).json({error: "Failed to fetch orders"})
         }
     } else {
+        console.log(error)
         res.status(401).json({error: 'unauthorized user'})
     }
 })

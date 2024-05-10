@@ -30,7 +30,7 @@ exports.up = function(db) {
     'phoneNumber': {
       'type':'string',
     },
-    ' email':{
+    'email':{
       'type': 'string',
       'notNull': true
     },

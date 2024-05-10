@@ -111,6 +111,7 @@ const searchRoutes = require('./routes/search');
 const checkoutRoutes = require('./routes/checkout');
 const cartRoutes = require('./routes/carts');
 const orderRoutes = require('./routes/orders');
+const customerRoutes = require('./routes/customers');
 
 async function main(){
 
@@ -123,6 +124,7 @@ async function main(){
     app.use('/cart', express.json(), cartRoutes);
     app.use('/orders', express.json(), orderRoutes);
     app.use('/checkout', checkoutRoutes);
+    app.use('/customers', express.json(), customerRoutes)
 
 }
 
