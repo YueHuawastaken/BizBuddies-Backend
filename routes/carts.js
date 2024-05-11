@@ -1,23 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const cartService = require('../service-layer/carts-service');
-const { checkSupplierAuthenticationWithJWT } = require('../middleware');
+const { checkCustomerAuthenticationWithJWT } = require('../middleware');
 
-router.get('/', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
+router.get('/:cartId/:customerId', [checkCustomerAuthenticationWithJWT], async(req,res)=>{
 
     console.log('route hit for customer cart get')
 
-    let customerId = parseInt(req.query.customerId);
-    let cartId = parseInt(req.query.cartId);
+    let customerId = parseInt(req.params.customerId);
+    let cart_id = parseInt(req.params.cartId);
     console.log('customerId here', customerId);
-    console.log('cartId here', cartId);
+    console.log('cartId here', cart_id);
     console.log('customerId here', req.customers.id);
 
     if (req.customers.id === customerId){
         console.log('customer passed cart jwt authorization');     
 
         try {
-            const itemsInCart = await cartService.retrieveCustomerCartItems(cartId);
+            const itemsInCart = await cartService.retrieveCustomerCartItems(cart_id);
        
             if (itemsInCart.length>0){
                 res.status(201).json({"itemsInCart": itemsInCart.toJSON()});
@@ -33,17 +33,20 @@ router.get('/', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 })
 
 
-router.post('/deleteItem', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
+router.post('/:cartId/:productVersionId/:customerId/deleteItem', [checkCustomerAuthenticationWithJWT], async(req,res)=>{
 
     console.log('delete entry route hit')
 
-    const customerId = parseInt(req.query.customerId);
-    const cartId = parseInt(req.query.cartId);
-    const productVersionId = parseInt(req.query.productVersionId)
+    let customer_id = parseInt(req.params.customerId);
+    console.log(customer_id)
+    let cart_id = parseInt(req.params.cartId);
+    console.log(cart_id)
+    const productVersion_id = parseInt(req.params.productVersionId)
+    console.log(productVersion_id)
 
-    if (req.customers.id === customerId){
+    if (req.customers.id === customer_id){
         try{
-            await cartService.removeEntryFromCart(customerId, cartId, productVersionId);
+            await cartService.removeEntryFromCart(customer_id, cart_id, productVersion_id);
             res.status(204).send("Delete successful")
         } catch (error){
             res.status(400).send('fail to delete entry')

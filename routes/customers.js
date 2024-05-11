@@ -131,11 +131,11 @@ router.get('/dashboard/:customerId', [checkCustomerAuthenticationWithJWT], async
 
             let customers = await findCustomerById(req.params.customerId)
             console.log(customers.get('username'));
-            let customerOrders = await retrieveOrderByCustomerId (req.params.customerId)
-            console.log(customerOrders);
-            if (customerOrders.length > 0){
+            let customerOrder = await retrieveOrderByCustomerId (req.params.customerId)
+            console.log(customerOrder);
+            if (customerOrder.length > 0){
 
-                res.json({"orders":customerOrders})
+                res.json({"orders":customerOrder})
 
             } else {
                 res.status(204).json({error: "No orders found"})

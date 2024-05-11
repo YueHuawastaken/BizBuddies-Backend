@@ -15,7 +15,7 @@ const retrieveAllCarts = async () => {
 const retrieveSingleCartItem = async (cart_id) => {
 
     try{
-        let cartItem = await carts.collection().where({'cart_id': cart_id}).fetch({
+        let cartItem = await carts.collection().where({'id': cart_id}).fetch({
             'require':false
         })  
         return cartItem;
@@ -37,7 +37,7 @@ const fetchCartItemByCustomerAndProductVersion = async (customer_id, cart_id, pr
     try{
         const foundCartItem = await carts.where({
             'customer_id': customer_id,
-            'cart_id': cart_id,
+            'id': cart_id,
             'productVersion_id': productVersion_id
         }).fetch({
             require: false
@@ -58,7 +58,6 @@ const createNewCartItem = async (payload) => {
         const newCartItem = new carts()
         newCartItem.set('cart_id', payload.cart_id);
         newCartItem.set('customer_id', payload.customer_id);
-        newCartItem.set('supplier_id', payload.supplier_id);
         newCartItem.set('productVersion_id', payload.productVersion_id);
         newCartItem.set('productName', payload.productName);
         newCartItem.set('description', payload.description);
@@ -87,7 +86,7 @@ const removeEntryFromCart = async (customer_id, cart_id, productVersion_id) => {
 
 const removeEntireCart = async (cart_id) => {
     try{
-        const cartForDeletion = await retrieveSingleCartItems(cart_id);
+        const cartForDeletion = await retrieveSingleCartItem(cart_id);
         await cartForDeletion.destroy();
     } catch (error) {
         console.error('failed to delete cart item', error)

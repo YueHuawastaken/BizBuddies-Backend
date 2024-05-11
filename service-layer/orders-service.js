@@ -7,7 +7,8 @@ const retrieveAllOrders = async () => {
 }
 
 const retrieveOrderByCustomerId = async (customer_id) => {
-    await orderDataAccess.retrieveOrderByCustomerId(customer_id);
+ let customerOrder = await orderDataAccess.retrieveOrderByCustomerId(customer_id); 
+ return customerOrder
 }
 
 const  retrieveOrderByOrderId = async (order_id) => {

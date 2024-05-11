@@ -5,7 +5,7 @@ const retrieveAllCarts = async () => {
 }
 
 const retrieveCustomerCartItems = async (cart_id) => {
-    const cartItems = await cartDataAccess.retrieveSingleCartItems(cart_id);
+    const cartItems = await cartDataAccess.retrieveSingleCartItem(cart_id);
     return cartItems;
 }
 
@@ -17,7 +17,8 @@ const deleteCart = async (cart_id) => {
 
 
 const removeEntryFromCart = async (customer_id, cart_id, productVersion_id) => {
-    await cartDataAccess.removeEntryFromCart(customer_id, cart_id, productVersion_id);
+    const cartItems = await cartDataAccess.removeEntryFromCart(customer_id, cart_id, productVersion_id);
+    return cartItems;
 }
 
 module.exports =    {

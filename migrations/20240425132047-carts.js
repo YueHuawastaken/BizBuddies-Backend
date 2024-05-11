@@ -40,13 +40,13 @@ exports.up = function(db) {
       'type':'int',
       'unsigned': true
     },
-    supplier_id:{
+      customer_id:{
       "type":"int",
       "notNull": true,
       "unsigned": true,
       "foreignKey":{
-        "name": "carts_supplier_fk",
-        "table": "suppliers",
+        "name": "carts_customer_fk",
+        "table": "customers",
         "mapping": "id",
         "rules": {
           "onDelete": "cascade",
