@@ -86,7 +86,7 @@ router.post('/register', async(req, res)=>{
 
     console.log('register route hit')
     let foundCustomer = await customers.where({
-    'userName' : req.body.userName,
+    'username' : req.body.userName,
     'email' : req.body.email,
     'phoneNumber': req.body.phoneNumber,
     'warehouseAddress' : req.body.warehouseAddress,
@@ -104,7 +104,7 @@ router.post('/register', async(req, res)=>{
         const newCustomer = new customers();
         console.log('creating new customer, payload here=>', req.body)
         try {
-            newCustomer.set('userName', req.body.userName)
+            newCustomer.set('username', req.body.username)
             newCustomer.set('email', req.body.email)
             newCustomer.set('phoneNumber', req.body.phoneNumber)
             newCustomer.set('warehouseAddress', req.body.warehouseAddress)
