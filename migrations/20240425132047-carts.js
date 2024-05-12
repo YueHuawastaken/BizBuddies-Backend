@@ -58,7 +58,7 @@ exports.up = function(db) {
 };
 
 exports.down = async function(db) {
-  await db.removeForeignKey("carts", "carts_supplier_fk");
+  await db.removeForeignKey("carts", "carts_customer_fk");
   await db.removeForeignKey("carts", "carts_productVersion_fk");
   return db.dropTable('carts');
 };

@@ -78,11 +78,21 @@ const removeEntryFromCart = async (customer_id, cart_id, productVersion_id) => {
     try{
         const cartItemForDeletion = await fetchCartItemByCustomerAndProductVersion(customer_id, cart_id, productVersion_id);
         console.log(cartItemForDeletion)
-        await cartItemForDeletion.destroy();
+        if (cartItemForDeletion) {
+            await cartItemForDeletion.destroy();
+            console.log("Cart item deleted successfully.");
+        } else {
+            console.log("No cart item found for deletion.");
+        }
     } catch (error) {
-        console.error('failed to delete cart item', error)
+        console.error('Failed to delete cart item', error);
     }
 }
+    //     await cartItemForDeletion.destroy();
+    // } catch (error) {
+    //     console.error('failed to delete cart item', error)
+    // }
+
 
 const removeEntireCart = async (cart_id) => {
     try{

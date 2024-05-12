@@ -41,7 +41,7 @@ router.post('/:cartId/:productVersionId/:customerId/deleteItem', [checkCustomerA
     console.log(customer_id)
     let cart_id = parseInt(req.params.cartId);
     console.log(cart_id)
-    const productVersion_id = parseInt(req.params.productVersionId)
+    const productVersion_id = parseInt(req.params.productVersionId);
     console.log(productVersion_id)
 
     if (req.customers.id === customer_id){

@@ -85,17 +85,17 @@ router.post('/login', async(req, res)=>{
 router.post('/register', async(req, res)=>{
 
     console.log('register route hit')
+    try {
     let foundCustomer = await customers.where({
-    'username' : req.body.userName,
+    'username' : req.body.username,
     'email' : req.body.email,
     'phoneNumber': req.body.phoneNumber,
     'warehouseAddress' : req.body.warehouseAddress,
     'password': getHashedPassword(req.body.password)
     }).fetch({
-        require: false
+        require: false,
     });
-
-    console.log('is there foundCustomer', foundCustomer)
+    console.log('is there foundCustomer', foundCustomer);
 
     if (foundCustomer){
         res.status(400).send("Phone Number already in use");    
@@ -105,8 +105,8 @@ router.post('/register', async(req, res)=>{
         console.log('creating new customer, payload here=>', req.body)
         try {
             newCustomer.set('username', req.body.username)
-            newCustomer.set('email', req.body.email)
             newCustomer.set('phoneNumber', req.body.phoneNumber)
+            newCustomer.set('email', req.body.email)
             newCustomer.set('warehouseAddress', req.body.warehouseAddress)
             newCustomer.set('password', getHashedPassword(req.body.password))
             await newCustomer.save();
@@ -116,6 +116,10 @@ router.post('/register', async(req, res)=>{
             res.status(500).send('server is down')
         }
     }
+} catch (error) {
+    console.error('Error fetching customer:', error);
+    res.status(500).send('Error fetching customer');
+}
 })
 
 router.get('/dashboard/:customerId', [checkCustomerAuthenticationWithJWT], async(req, res)=>{
