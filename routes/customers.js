@@ -68,6 +68,7 @@ router.post('/login', async(req, res)=>{
                 res.json({
                     "accessToken": accessToken, "refreshToken": refreshToken, "customer_id": req.session.customers.id, "phoneNumber": phoneNumber,
                     "username" : req.session.customers.username
+
                 })
             } else {
                 res.status(403).send("Customer not found")

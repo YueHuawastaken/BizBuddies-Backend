@@ -121,7 +121,7 @@ router.get('/dashboard/:supplierId', [checkSupplierAuthenticationWithJWT], async
 
     console.log('dashboard get route hit')
     console.log('req supplier id here', req.suppliers.id)
-
+    console.log(req.suppliers);
     if (req.suppliers.id == req.params.supplierId){
 
         console.log('passed supplier basic authorization')
@@ -165,7 +165,7 @@ router.post('/add-product/:supplierId', [checkSupplierAuthenticationWithJWT], as
 
 router.get('/:supplierId/:productId/products', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
 
-    console.log("supplier single product route hit, req.query here =>", req.params.supplierId)
+    console.log("test supplier single product route hit, req.query here =>", req.params.supplierId)
     console.log("req.suppliers.id", req.suppliers.id)
 
     let supplierId = parseInt(req.params.supplierId)
