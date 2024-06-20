@@ -5,17 +5,7 @@ const retrieveAllProducts = async () => {
     
     try{
         return await products.fetchAll({
-            withRelated: [{
-                            'productVersion': (queryBuild) => {
-                                queryBuild.select('id', 'versionName', 'image_url', 'price', )
-                                }
-                            },
-                            {
-                                'suppliers' : (queryBuild) => {
-                                    queryBuild.select('studioShopName')
-                                }
-                            }
-            ]
+            withRelated: ['productVersion', 'productVersion.suppliers']
         });
 
     } catch (error) {
@@ -77,6 +67,33 @@ const findProductVersionById = async (product_id) => {
     try{
         const productFoundById = await productVersion.where({
             'id': product_id
+        }).fetch({
+            require:true,
+            withRelated: ['products', 'suppliers'
+                // {
+                // 'productVersion': (queryBuild) => {
+                //     queryBuild.select('versionName', 'image_url', 'price', )
+                //     }
+                // },
+                // {
+                //     'suppliers' : (queryBuild) => {
+                //         queryBuild.select('studioShopName')
+                //     }
+                // }
+            ]
+        })
+        console.log(productFoundById)
+        return productFoundById;
+
+    } catch (error){
+        console.error('error finding product by Id', error)
+    }
+}
+
+const findProductVersionByproductId = async (product_id) => {
+    try{
+        const productFoundById = await productVersion.where({
+            'product_id': product_id
         }).fetch({
             require:true,
             withRelated: ['products', 'suppliers'
@@ -230,6 +247,6 @@ const searchProductsBySearchForm = async (payload)=>{
 }
 
 module.exports = {
-    retrieveAllProducts, retrieveAllProductVersion, retrieveAllSuppliers, findProductById, findProductVersionById,
+    retrieveAllProducts, retrieveAllProductVersion, retrieveAllSuppliers, findProductById, findProductVersionById, findProductVersionByproductId,
     addProductListing, getProductVersionsBySupplier,searchProductsBySearchForm, getProductsBySupplier
 }

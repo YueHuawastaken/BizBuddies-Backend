@@ -25,6 +25,11 @@ const findProductVersionById = async (productId) => {
     return product;
 }
 
+const findProductVersionByproductId = async (productId) => {
+    let product = await productsDataAccess.findProductVersionByproductId(productId);
+    return product;
+}
+
 const getProductVersionsBySupplier = async (supplier_id) => {
     let product = await productsDataAccess.getProductVersionsBySupplier(supplier_id);
     return product;
@@ -46,6 +51,6 @@ const getProductsBySupplier = async (supplier_id = 0) => {
 }
 
 module.exports= {
-    retrieveAllProducts, retrieveAllProductVersion, retrieveAllSuppliers, findProductById, findProductVersionById,
+    retrieveAllProducts, retrieveAllProductVersion, retrieveAllSuppliers, findProductById, findProductVersionById,findProductVersionByproductId,
     addProductListing, getProductVersionsBySupplier,searchProductsBySearchForm, getProductsBySupplier
                 }

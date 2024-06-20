@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { bootstrapField, createProductForm, createSearchForm } = require('../forms'); 
-const { retrieveAllProducts, retrieveAllProductVersion, findProductById, 
+const { retrieveAllProducts, retrieveAllProductVersion, findProductById, findProductVersionById, findProductVersionByproductId, 
     addProductListing, getProductVersionsBySupplier} = require("../service-layer/products-service");
 
 router.get('/', async(req,res)=>{
@@ -12,7 +12,7 @@ router.get('/', async(req,res)=>{
 
 router.get('/:productId', async(req,res)=>{
     const productId = req.params.productId
-    let product = await findProductById(productId)
+    let product = await findProductVersionByproductId(productId)
 
     console.log('find product by id route hit', product)
     res.json({'product': product.toJSON()});
