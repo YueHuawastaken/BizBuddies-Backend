@@ -73,6 +73,33 @@ const findProductById = async (product_id) => {
     }
 }
 
+const findProductVersionById = async (product_id) => {
+    try{
+        const productFoundById = await productVersion.where({
+            'id': product_id
+        }).fetch({
+            require:true,
+            withRelated: ['products', 'suppliers'
+                // {
+                // 'productVersion': (queryBuild) => {
+                //     queryBuild.select('versionName', 'image_url', 'price', )
+                //     }
+                // },
+                // {
+                //     'suppliers' : (queryBuild) => {
+                //         queryBuild.select('studioShopName')
+                //     }
+                // }
+            ]
+        })
+        console.log(productFoundById)
+        return productFoundById;
+
+    } catch (error){
+        console.error('error finding product by Id', error)
+    }
+}
+
 const addProductListing = async (productForm) => {
 
     try{
@@ -94,20 +121,28 @@ const addProductListing = async (productForm) => {
 
 async function getProductVersionsBySupplier(supplier_id) {
     try {
-        return await productVersion
-            .query(qb => {
-                qb.innerJoin('suppliers', 'productVersion.supplier_id', 'suppliers.id')
-                .where('suppliers.id', '=', supplier_id);
+        return await products
+            .query(qb => {qb.innerJoin('productVersion','products.id','productVersion.product_id')
+                .where('productVersion.supplier_id', '=', supplier_id);
             })
-            .fetchAll({
-                withRelated: [
-                    'products' // Assuming you want to fetch related products data
-                ]
-            });
+            .fetchAll({withRelated: [
+                'productVersion' // Assuming you want to fetch related products data
+            ]});
     } catch (error) {
         console.log("Error retrieving products by supplier id")
     }
     
+}
+
+async function getProductsBySupplier (supplier_id) {
+    try {
+        return await products
+            .fetchAll({withRelated: [
+                'productVersion' // Assuming you want to fetch related products data
+            ]});
+    } catch (error) {
+        console.log("Error retrieving products by supplier id")
+    }
 }
 
 // const findProductsByStudioShopName = async (studioShopName) => {
@@ -195,6 +230,6 @@ const searchProductsBySearchForm = async (payload)=>{
 }
 
 module.exports = {
-    retrieveAllProducts, retrieveAllProductVersion, retrieveAllSuppliers, findProductById, 
-    addProductListing, getProductVersionsBySupplier,searchProductsBySearchForm
+    retrieveAllProducts, retrieveAllProductVersion, retrieveAllSuppliers, findProductById, findProductVersionById,
+    addProductListing, getProductVersionsBySupplier,searchProductsBySearchForm, getProductsBySupplier
 }

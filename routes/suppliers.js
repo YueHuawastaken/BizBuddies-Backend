@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const {suppliers} = require('../models');
 
 const {findSupplierById} = require('../data-access-layer/suppliers');
-const {getProductVersionsBySupplier, findProductById} = require('../service-layer/products-service');
+const {getProductVersionsBySupplier, findProductById, getProductsBySupplier, findProductVersionById} = require('../service-layer/products-service');
 const {retrieveOrderByCustomerId} = require('../service-layer/orders-service');
 const {retrieveCustomerCartItems} = require('../service-layer/carts-service');
 const {postNewSupplierProduct, updateSupplierProduct} = require('../service-layer/suppliers-service');
@@ -147,8 +147,37 @@ router.get('/dashboard/:supplierId', [checkSupplierAuthenticationWithJWT], async
     }
 })
 
-router.post('/add-product/:supplierId', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
+router.get('/getproductsname/:supplierId', [checkSupplierAuthenticationWithJWT], async(req, res)=>{ 
+    console.log('dashboard get route hit')
+    console.log('req supplier id here', req.suppliers.id)
+    console.log(req.suppliers);
+    if (req.suppliers.id == req.params.supplierId){
 
+        console.log('passed supplier basic authorization')
+
+        try{
+            let supplierProducts = await getProductsBySupplier (req.suppliers.id)
+            console.log(supplierProducts);
+            if (supplierProducts.length > 0){
+
+                res.json({"products":supplierProducts})
+
+            } else {
+
+                res.status(204).json({error: "No products found"})
+            }
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({error: "Failed to fetch products"})
+        }
+    } else {
+        res.status(401).json({error: 'unauthorized user'})
+    }
+})
+
+router.post('/add-product/:supplierId', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
+    console.log("here ", req.suppliers.id, req.params.supplierId)
     if (req.suppliers.id == req.params.supplierId){
 
         try{
@@ -200,7 +229,7 @@ router.get('/:supplierId/update/:productId', [checkSupplierAuthenticationWithJWT
         const product_id = req.params.productId;
 
         try{
-            const product = await findProductById(product_id);
+            const product = await findProductVersionById(product_id);
             res.json({"product": product.toJSON()})
 
         } catch (error){
@@ -250,7 +279,7 @@ router.post('/:supplierId/:productId/delete', [checkSupplierAuthenticationWithJW
         try{
             console.log('supplier finding product for deletion')
 
-            const product= await findProductById(productId);
+            const product= await findProductVersionById(productId);
             console.log('item to be deleted', product.toJSON());
 
             await product.destroy();

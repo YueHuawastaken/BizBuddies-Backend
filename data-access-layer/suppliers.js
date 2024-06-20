@@ -23,14 +23,26 @@ const addSupplierProductListing = async (payload) => {
     console.log('route hit for addSupplierProduct')
 
     try{
-        const product = new products();
-        // product.set('product_id', payload.product_id)
-        product.set('productName', payload.productName);
-        product.set('description', payload.description);
 
-        // Save the product
-        await product.save();
-        const productId = product.get('id');
+        const productFoundById = await products.where({
+            'productName': payload.productName
+        }).fetch();
+        let productId;
+        if(productFoundById)
+        {
+            productId = productFoundById.get('id')
+        }
+        else
+        {
+            const product = new products();
+            // product.set('product_id', payload.product_id)
+            product.set('productName', payload.productName);
+            product.set('description', payload.description);
+
+            // Save the product
+            await product.save();
+            productId = product.get('id');
+        }
 
         // Create a new product version
         const newproductVersion = new productVersion();
