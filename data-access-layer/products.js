@@ -94,7 +94,7 @@ const findProductVersionByproductId = async (product_id) => {
     try{
         const productFoundById = await productVersion.where({
             'product_id': product_id
-        }).fetch({
+        }).fetchAll({
             require:true,
             withRelated: ['products', 'suppliers'
                 // {
