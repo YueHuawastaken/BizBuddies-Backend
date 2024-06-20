@@ -23,17 +23,14 @@ const addSupplierProductListing = async (payload) => {
     console.log('route hit for addSupplierProduct')
 
     try{
-
-        const productFoundById = await products.where({
-            'productName': payload.productName
-        }).fetch();
         let productId;
-        if(productFoundById)
-        {
+        try {
+            const productFoundById = await products.where({
+                'productName': payload.productName
+            }).fetch();
             productId = productFoundById.get('id')
-        }
-        else
-        {
+        } catch (error) {
+            console.log("New Product");
             const product = new products();
             // product.set('product_id', payload.product_id)
             product.set('productName', payload.productName);
@@ -42,6 +39,7 @@ const addSupplierProductListing = async (payload) => {
             // Save the product
             await product.save();
             productId = product.get('id');
+            console.log('Product:', product.toJSON());
         }
 
         // Create a new product version
@@ -55,7 +53,6 @@ const addSupplierProductListing = async (payload) => {
         // Save the new product version
         await newproductVersion.save();
         console.log('Success: Product and Product Version saved');
-        console.log('Product:', product.toJSON());
         console.log('Product Version:', newproductVersion.toJSON());
     } catch (error) {
         console.error('Error: Failed to save product and product version', error);

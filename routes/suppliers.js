@@ -177,7 +177,7 @@ router.get('/getproductsname/:supplierId', [checkSupplierAuthenticationWithJWT],
 })
 
 router.post('/add-product/:supplierId', [checkSupplierAuthenticationWithJWT], async(req,res)=>{
-    console.log("here ", req.suppliers.id, req.params.supplierId)
+    console.log("adding here ", req.suppliers.id, req.params.supplierId)
     if (req.suppliers.id == req.params.supplierId){
 
         try{
